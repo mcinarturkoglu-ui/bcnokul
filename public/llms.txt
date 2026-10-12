@@ -1,0 +1,75 @@
+# BCN Eğitim Kurumları (BCN International School & College)
+
+> Modern Uluslararası Vizyon • Akademik Mükemmeliyet • Zihinsel Disiplin
+
+## Kurumsal Bilgiler
+- Kurum Adı: BCN Eğitim Kurumları (Özel Çekmeköy BCN College)
+- Kurucu: Adem Bican (Eğitim Vizyoneri, Matematiksel Disiplin & Rasyonel Akıl Felsefesi)
+- Genel Müdür: Ahmet Taşkın Aydın
+- Kampüs: 12.000 m² entegre alan, Madenler Mahallesi İdealist Kent Caddesi No:5/A, 34776 Ümraniye / Çekmeköy, İstanbul
+- Telefon: 0552 051 23 36 (+90 552 051 23 36)
+- E-posta: info@bcnegitimkurumlari.k12.tr
+- Çalışma Saatleri: Pazartesi - Cuma: 08:00 - 18:00 | Cumartesi: 09:00 - 15:00
+- Resmi Web Sitesi: https://bcnegitimkurumlari.k12.tr/
+
+## Kademeler ve Eğitim Modelleri
+1. Aurelia Preschool (3 - 6 Yaş)
+   - URL: /kademeler/aurelia-preschool
+   - Felsefe: Baskı yerine alan, ezber yerine keşif ve güvenli bağlanma.
+   - Öne Çıkanlar: Yale University RULER duygusal zekâ modeli, doğal çift dillilik (İngilizce & Almanca daldırma/immersion), nöro-gelişimsel oyunlar, yapay zekâ destekli bireysel gelişim haritası.
+
+2. İlkokul (Primary School, 1 - 4. Sınıf)
+   - URL: /kademeler/ilkokul
+   - Felsefe: IB Primary Years Programme (PYP) Aday Okulu.
+   - Öne Çıkanlar: Kavramsal sorgulama döngüleri, MOXO Sürekli Dikkat Testi ile bireysel dikkat profili, Cambridge English müfredatı, erken STEM & robotik kodlama, yılda 30+ eserle zenginleşen okuma kültürü ve münazara.
+
+3. Ortaokul (Middle School, 5 - 8. Sınıf)
+   - URL: /kademeler/ortaokul
+   - Felsefe: Akademik disiplin, karakter inşası ve etik liderlik.
+   - Öne Çıkanlar: 7. sınıftan itibaren başlayan yoğunlaştırılmış LGS başarı tasarımı ve soru kampları, FLL (First Lego League) Türkiye Şampiyonu robotik takımı mentorluğu, Model United Nations (MUN) diplomasisi, ikinci yabancı dil Almanca.
+
+4. Anadolu Lisesi (9 - 12. Sınıf)
+   - URL: /kademeler/anadolu-lisesi
+   - Felsefe: Akademik derinlik, küresel fırsatlar ve güçlü gelecek.
+   - Öne Çıkanlar: OSSD Kanada Çift Diploma Programı (Ontario Secondary School Diploma), College Board Advanced Placement (AP) dersleri, YKS hedef odaklı koçluk ve etüt takibi, uluslararası MUN ve Erasmus+ projeleri.
+
+5. Fen Lisesi (9 - 12. Sınıf)
+   - URL: /kademeler/fen-lisesi
+   - Felsefe: Bilimsel derinlik, akademik mükemmeliyet ve küresel ufuk.
+   - Öne Çıkanlar: Dünya STEM Olimpiyatları Finalleri'nde 4 Dünya Derecesi ve 23 Madalya, ileri düzey Fizik, Kimya, Biyoloji ve Yapay Zekâ laboratuvarları, AP Science (Calculus, Physics, Chemistry), YKS Sayısal Derece Kampı.
+
+## Uluslararası Programlar
+- IB Primary Years Programme (PYP): /uluslararasi-programlar
+- Kanada Çift Diploma (OSSD): Ontario Eğitim Bakanlığı onaylı resmi Kanada lise diploması, yurt dışı üniversitelere sınavsız başvuru avantajı.
+- College Board AP (Advanced Placement): Üniversite seviyesinde ders tamamlama ve yurt içi/dışı üniversitelerde kredi/burs avantajı.
+- Model United Nations (MUN): Uluslararası diplomatik simülasyonlar ve akıcı İngilizce savunma.
+- Erasmus+ ve Avrupa Projeleri: Avrupa Birliği fonlu ortak bilim ve gençlik projeleri.
+- ThinkGlobal Eğitim Modeli: Küresel düşünme, BM Sürdürülebilir Kalkınma Amaçları entegrasyonu.
+
+## Başarılar ve Ödüller
+- URL: /basarilarimiz
+- Uluslararası STEM Olimpiyatları: 4 Dünya Derecesi, 23 Madalya (8 Altın, 9 Gümüş, 6 Bronz).
+- First Lego League (FLL): Türkiye Şampiyonu ve Marmara Şampiyonu (Robot Performans ve Öz Değerler birinciliği).
+- TRT World: Küresel çevre ve yapay zekâ belgeseliyle canlı yayın projesi.
+
+## Kampüs Olanakları
+- URL: /kampusumuz
+- 12.000 m² depreme dayanıklı akıllı kampüs.
+- İleri STEM & Robotik Ar-Ge Laboratuvarı (3D yazıcılar, sensörler, Spike Prime setleri).
+- Fizik, Kimya ve Moleküler Biyoloji Laboratuvarı.
+- 15.000+ basılı ve dijital kaynaklı Kütüphane & Araştırma Merkezi (JSTOR & Britannica).
+- FIBA onaylı zeminli Kapalı Spor Kompleksi ve tırmanma duvarı.
+- Sanat ve Seramik Atölyeleri, Ses Yalıtımlı Müzik Stüdyoları.
+- 350 kişilik Konferans ve Oditoryum Salonu.
+- Diyetisyen denetiminde 4 kap sıcak menü sunan Organik Yemekhane.
+
+## Kayıt ve Kabul Süreci
+- URL: /kayit-ve-kabul
+- Adımlar: 1) Ön başvuru formu doldurma, 2) Öğrenci tanıma mülakatı & düzey belirleme, 3) Veli tanışma ve eğitim modeli sunumu, 4) Kesin kayıt.
+- Sınıf mevcudu: Azami 18-20 öğrenci.
+- Randevu Alma: Web sitesi üzerinden "Randevu Al" butonu veya iletişim formu aracılığıyla yapılabilir.
+
+## Soru Cevap Fallback Kuralı
+Asistan, sitede doğrulanmamış (fiyat, unvan, harici bilgi gibi) konularda kesinlikle bilgi uydurmaz. Kullanıcıya:
+"Bu konuda web sitemizde doğrulanmış bir bilgi bulamadım. Dilerseniz iletişim sayfamızdan bizimle iletişime geçebilirsiniz."
+cevabını vererek iletişim sayfasına (/iletisim) veya 0552 051 23 36 numarasına yönlendirir.
