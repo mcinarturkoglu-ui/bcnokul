@@ -7,12 +7,10 @@ import CampusSection from "@/components/CampusSection";
 import LifeAndAchievementsSection from "@/components/LifeAndAchievementsSection";
 import NewsSection from "@/components/NewsSection";
 import AdmissionCtaSection from "@/components/AdmissionCtaSection";
-import FooterSlide from "@/components/FooterSlide";
-import FullpageSlider from "@/components/FullpageSlider";
 
 export default function HomePage() {
   return (
-    <FullpageSlider>
+    <div className="w-full bg-white text-[#17263D] overflow-x-hidden selection:bg-[#17263D] selection:text-white">
       <HeroSection />
       <WelcomeSection />
       <LevelsSection />
@@ -22,7 +20,6 @@ export default function HomePage() {
       <LifeAndAchievementsSection />
       <NewsSection />
       <AdmissionCtaSection />
-      <FooterSlide />
-    </FullpageSlider>
+    </div>
   );
 }
