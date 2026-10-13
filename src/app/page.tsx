@@ -1,3 +1,4 @@
+import FullPageContainer from "@/components/FullPageContainer";
 import HeroSection from "@/components/HeroSection";
 import WelcomeSection from "@/components/WelcomeSection";
 import LevelsSection from "@/components/LevelsSection";
@@ -10,16 +11,18 @@ import AdmissionCtaSection from "@/components/AdmissionCtaSection";
 
 export default function HomePage() {
   return (
-    <div className="w-full bg-white text-[#17263D] overflow-x-hidden selection:bg-[#17263D] selection:text-white">
-      <HeroSection />
-      <WelcomeSection />
-      <LevelsSection />
-      <ApproachSection />
-      <InternationalProgramsSection />
-      <CampusSection />
-      <LifeAndAchievementsSection />
-      <NewsSection />
-      <AdmissionCtaSection />
-    </div>
+    <main className="w-full h-full bg-[#0B1524] text-white overflow-hidden selection:bg-[#C59B27] selection:text-[#0B1524]">
+      <FullPageContainer>
+        <HeroSection />
+        <WelcomeSection />
+        <LevelsSection />
+        <ApproachSection />
+        <InternationalProgramsSection />
+        <CampusSection />
+        <LifeAndAchievementsSection />
+        <NewsSection />
+        <AdmissionCtaSection />
+      </FullPageContainer>
+    </main>
   );
 }
