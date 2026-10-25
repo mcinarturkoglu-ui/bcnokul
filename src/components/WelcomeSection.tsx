@@ -25,7 +25,7 @@ export default function WelcomeSection() {
               alt="BCN Koleji Madenler kampüsü ana giriş kapısı"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover group-hover:scale-104 transition-transform duration-700"
+              className="object-cover object-right group-hover:scale-104 transition-transform duration-700"
             />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
             <p className="absolute bottom-4 left-5 right-5 text-sm font-semibold text-white">

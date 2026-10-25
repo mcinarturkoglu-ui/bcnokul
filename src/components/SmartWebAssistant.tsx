@@ -314,7 +314,7 @@ export default function SmartWebAssistant() {
       {/* One box, two states: the ask bar grows upward (Y axis only) into the chat, keeping its
           width, radius and navy surface. Height uses the transitions.dev accordion (grid rows 0fr → 1fr). */}
       <div
-        className={`fixed bottom-6 left-4 sm:left-auto sm:w-[380px] sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-50 ${
+        className={`fixed bottom-6 left-4 sm:left-auto sm:w-[380px] sm:bottom-12 sm:right-8 lg:bottom-16 lg:right-10 z-50 ${
           isOpen ? "right-4" : "right-[84px]"
         }`}
       >
@@ -333,7 +333,7 @@ export default function SmartWebAssistant() {
           {/* Chat body: collapsed to 0 height until open */}
           <div className="t-acc-panel">
             <div className="t-acc-panel-inner" inert={!isOpen}>
-              <div className="relative flex flex-col h-[min(560px,calc(100svh-160px))] sm:h-[min(560px,calc(100svh-200px))]">
+              <div className="relative flex flex-col h-[min(560px,calc(100svh-160px))] sm:h-[min(560px,calc(100svh-240px))]">
                 {/* A single cobalt light behind the welcome screen; it fades once the conversation starts */}
                 <div
                   aria-hidden="true"
