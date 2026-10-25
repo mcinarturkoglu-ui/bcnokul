@@ -21,7 +21,10 @@ export default function SubpageHero({
   breadcrumbs,
 }: SubpageHeroProps) {
   return (
-    <section className="relative py-16 sm:py-24 bg-[#0D1829] text-white overflow-hidden">
+    <section
+      data-hero="dark"
+      className="relative -mt-[58px] md:-mt-[89px] pt-[122px] sm:pt-[154px] md:pt-[185px] pb-16 sm:pb-24 bg-[#0D1829] text-white overflow-hidden"
+    >
       {/* Background imagery */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -39,14 +42,14 @@ export default function SubpageHero({
         <div className="max-w-3xl space-y-4">
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-2 text-xs text-slate-400 mb-2">
-            <Link href="/" className="hover:text-white transition-colors">
+            <Link href="/" className="inline-block py-3 -my-3 hover:text-white transition-colors">
               Ana Sayfa
             </Link>
             {breadcrumbs.map((crumb, idx) => (
               <React.Fragment key={idx}>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
                 {crumb.href ? (
-                  <Link href={crumb.href} className="hover:text-white transition-colors">
+                  <Link href={crumb.href} className="inline-block py-3 -my-3 hover:text-white transition-colors">
                     {crumb.label}
                   </Link>
                 ) : (

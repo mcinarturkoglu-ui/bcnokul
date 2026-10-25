@@ -1,24 +1,27 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Bot,
-  Sparkles,
-  Send,
   X,
   ExternalLink,
   RotateCcw,
-  ShieldCheck,
   Phone,
   Calendar,
-  Compass,
   Settings,
   ArrowRight,
-  MessageSquare,
+  ArrowUp,
+  Sparkles,
+  MapPin,
+  School,
+  GraduationCap,
+  ClipboardList,
 } from "lucide-react";
 import { useModal } from "@/context/ModalContext";
+import { INSTITUTION_INFO } from "@/data/bcnData";
+import { PHONE_HREF } from "@/lib/contact";
 import {
   processUserMessage,
   AssistantAction,
@@ -34,28 +37,71 @@ interface ChatMessage {
   sources?: AssistantSource[];
   actions?: AssistantAction[];
   isFallback?: boolean;
+  // The welcome message feeds the welcome screen cards instead of rendering as a bubble
+  suggestions?: string[];
+  isWelcome?: boolean;
+  // Loaded from sessionStorage: already seen, so it does not replay its entrance
+  restored?: boolean;
   timestamp: string;
 }
 
 const INITIAL_MESSAGE: ChatMessage = {
   id: "msg-welcome",
   sender: "assistant",
-  text: "Merhaba! 👋\nWeb sitemize hoş geldiniz. Size nasıl yardımcı olabilirim?\nHizmetlerimiz, başvurular ve merak ettiğiniz diğer konularda bana sorular sorabilirsiniz.",
+  text: "Merhaba, size nasıl yardımcı olabilirim?",
   sources: [],
   actions: [
     {
       type: "OPEN_ADMISSION_MODAL",
-      label: "Randevu Formu Aç",
+      label: "Randevu al",
       payload: "randevu",
     },
     {
       type: "NAVIGATE",
-      label: "İletişim Bilgileri",
+      label: "İletişim bilgileri",
       payload: "/iletisim",
     },
   ],
+  suggestions: SUGGESTED_QUESTIONS.slice(0, 3),
+  isWelcome: true,
   timestamp: "Şimdi",
 };
+
+// One icon per welcome card, in the order of the suggested questions above
+const SUGGESTION_ICONS = [School, GraduationCap, ClipboardList];
+
+// Incoming-message entrance: a calm rise and fade with the smooth-out ease
+const ENTER_EASE = [0.22, 1, 0.36, 1] as const;
+function enter(delay = 0) {
+  return {
+    initial: { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.45, ease: ENTER_EASE, delay },
+  };
+}
+// Rows glide up when a new message pushes them, instead of jumping
+const ROW_LAYOUT = { layout: { duration: 0.45, ease: ENTER_EASE } };
+
+// First question choreography (seconds): the crest flies to the greeting bubble, the greeting arrives,
+// then the visitor's question, then the typing indicator. The reply waits until the sequence has played.
+const OPENING = { crest: 0.8, greeting: 0.35, question: 1.0, typing: 1.5 };
+const OPENING_MIN_REPLY_MS = 2600;
+// Clearing the chat brings the welcome screen back with a short settle-in
+const WELCOME_ENTER = { duration: 0.4, ease: ENTER_EASE };
+const MIN_REPLY_MS = 900;
+const elapsedSince = (from = 0) => performance.now() - from;
+
+// The visitor's clock is only known in the browser; prerendered HTML says "Merhaba"
+const noopSubscribe = () => () => {};
+const getHour = () => new Date().getHours();
+const getServerHour = () => null;
+
+function greetingFor(hour: number | null) {
+  if (hour === null) return "Merhaba";
+  if (hour >= 5 && hour < 12) return "Günaydın";
+  if (hour >= 12 && hour < 18) return "İyi günler";
+  return "İyi akşamlar";
+}
 
 export default function SmartWebAssistant() {
   const router = useRouter();
@@ -67,6 +113,31 @@ export default function SmartWebAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
   const [isTyping, setIsTyping] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTracing, setIsTracing] = useState(false);
+  // Bumped on "clear chat" so the crest does not fly back from the old conversation
+  const [chatRun, setChatRun] = useState(0);
+  const avatarLayoutId = `bcn-greeting-avatar-${chatRun}`;
+
+  // Draw the eye to the ask bar: a light traces its border a single lap on every page load,
+  // every in-site page change and when the browser restores the page from its back/forward cache.
+  const [traceRun, setTraceRun] = useState(0);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setTraceRun((run) => run + 1); // new key remounts the bar so the animation restarts cleanly
+      setIsTracing(true);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
+
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (!e.persisted) return;
+      setTraceRun((run) => run + 1);
+      setIsTracing(true);
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
 
   // Alibaba Page Agent optional BYO config
   const [pageAgentConfig, setPageAgentConfig] = useState<PageAgentConfigState>({
@@ -84,7 +155,9 @@ export default function SmartWebAssistant() {
     try {
       const savedMessages = sessionStorage.getItem("bcn_chat_history");
       if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
+        // Older sessions stored a previous welcome text; always show the current one
+        const restored: ChatMessage[] = JSON.parse(savedMessages);
+        setMessages(restored.map((m) => (m.id === INITIAL_MESSAGE.id ? INITIAL_MESSAGE : { ...m, restored: true })));
       }
       const savedConfig = localStorage.getItem("bcn_pageagent_config");
       if (savedConfig) {
@@ -109,15 +182,23 @@ export default function SmartWebAssistant() {
   // Scroll to bottom on new message or typing state change
   useEffect(() => {
     if (isOpen) {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [messages, isTyping, isOpen]);
 
-  // Focus input on open
+  // Focus the input on open; Escape collapses the chat; tell the page (WhatsApp button) it is open
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 250);
-    }
+    document.body.dataset.aiOpen = String(isOpen);
+    if (!isOpen) return;
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 250);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [isOpen]);
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -134,6 +215,8 @@ export default function SmartWebAssistant() {
       }),
     };
 
+    const isOpeningSend = messages.length === 1;
+    const startedAt = elapsedSince();
     setMessages((prev) => [...prev, userMsg]);
     setInputVal("");
     setIsTyping(true);
@@ -142,8 +225,9 @@ export default function SmartWebAssistant() {
       // Process query using Verified RAG & Action Dispatcher
       const result = await processUserMessage(text, pathname);
 
-      // Short delay for natural typing rhythm
-      await new Promise((resolve) => setTimeout(resolve, 350));
+      // Keep the typing indicator up long enough to read, and let the opening sequence finish first
+      const minWait = isOpeningSend ? OPENING_MIN_REPLY_MS : MIN_REPLY_MS;
+      await new Promise((resolve) => setTimeout(resolve, Math.max(0, minWait - elapsedSince(startedAt))));
 
       const botMsg: ChatMessage = {
         id: `bot-${Date.now()}`,
@@ -209,6 +293,7 @@ export default function SmartWebAssistant() {
 
   const handleResetChat = () => {
     setMessages([INITIAL_MESSAGE]);
+    setChatRun((run) => run + 1);
     sessionStorage.removeItem("bcn_chat_history");
   };
 
@@ -218,292 +303,294 @@ export default function SmartWebAssistant() {
     setIsSettingsOpen(false);
   };
 
+  // Before the first question the panel is a welcome screen, not a conversation
+  const isEmpty = messages.length === 1 && Boolean(messages[0].isWelcome);
+  const hour = useSyncExternalStore(noopSubscribe, getHour, getServerHour);
+
   return (
     <>
-      {/* Floating Launcher Pill Button (Prominent & Luxury) */}
+      {/* Floating launcher, labelled as an AI assistant so visitors know they are not talking to staff */}
       <aside aria-label="BCN Akıllı Web Asistanı Bileşeni">
-      <div className="fixed bottom-20 right-3 sm:bottom-24 sm:right-6 z-40">
-        <motion.button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          className={`flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full shadow-2xl transition-all duration-300 border border-white/20 backdrop-blur-md cursor-pointer ${
-            isOpen
-              ? "bg-[#17263D] text-white ring-2 ring-[#C59B27]/40"
-              : "bg-gradient-to-r from-[#17263D] via-[#1E3A8A] to-[#17263D] text-white hover:shadow-[#1E3A8A]/40"
+      {/* One box, two states: the ask bar grows upward (Y axis only) into the chat, keeping its
+          width, radius and navy surface. Height uses the transitions.dev accordion (grid rows 0fr → 1fr). */}
+      <div
+        className={`fixed bottom-6 left-4 sm:left-auto sm:w-[380px] sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-50 ${
+          isOpen ? "right-4" : "right-[84px]"
+        }`}
+      >
+        <div
+          key={traceRun}
+          role="region"
+          aria-label="BCN yapay zekâ asistanı"
+          data-open={isOpen}
+          onAnimationEnd={(e) => {
+            if (e.animationName === "ai-trace-glow") setIsTracing(false);
+          }}
+          className={`t-acc relative flex flex-col rounded-[24px] bg-[#0B1524] text-white border border-white/15 shadow-xl focus-within:border-[#2563EB] focus-within:ring-2 focus-within:ring-[#2563EB]/40 transition-colors ${
+            isTracing && !isOpen ? "ai-bar-trace" : ""
           }`}
-          aria-label="BCN Akıllı Asistanı Aç"
         >
-          <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-[#C59B27] to-amber-300 flex items-center justify-center text-[#17263D] shadow-inner font-bold">
-            <Sparkles className="w-4 h-4 text-[#17263D] animate-spin-slow" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#17263D]" />
-          </div>
-
-          <div className="text-left hidden sm:block">
-            <div className="text-xs font-bold tracking-wide flex items-center gap-1.5 text-white">
-              <span>BCN Asistan</span>
-              <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded-full bg-[#C59B27] text-slate-900 tracking-wider">
-                AI
-              </span>
-            </div>
-            <div className="text-[10px] text-slate-300 font-medium">
-              Doğrulanmış Web Rehberi
-            </div>
-          </div>
-
-          <span className="sm:hidden text-xs font-bold pr-1">Asistan</span>
-        </motion.button>
-      </div>
-
-      {/* Main Chat Interface Window */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 30, scale: 0.96 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-24px)] sm:w-[420px] max-w-[440px] h-[84vh] sm:h-[600px] max-h-[640px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden text-[#17263D] font-sans"
-          >
-            {/* Window Header */}
-            <header className="relative px-5 py-4 bg-gradient-to-r from-[#17263D] via-[#1E3A8A] to-[#17263D] text-white flex items-center justify-between shadow-md">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#C59B27] to-amber-200 p-0.5 shadow-md flex items-center justify-center">
-                  <div className="w-full h-full rounded-[14px] bg-[#17263D] flex items-center justify-center text-amber-400">
-                    <Bot className="w-5 h-5" />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold tracking-tight text-white">
-                      BCN Akıllı Web Asistanı
-                    </h3>
-                    <span className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Canlı
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-300 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-[#C59B27]" />
-                    Doğrulanmış Site İçerik Motoru
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1 text-slate-300">
-                <button
-                  type="button"
-                  onClick={handleResetChat}
-                  title="Sohbeti Temizle"
-                  className="p-1.5 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-                  aria-label="Sohbeti Temizle"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsSettingsOpen(true)}
-                  title="Page Agent Ayarları"
-                  className="p-1.5 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-                  aria-label="Ayarlar"
-                >
-                  <Settings className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  title="Kapat"
-                  className="p-1.5 hover:text-white hover:bg-white/10 rounded-lg transition-colors ml-1 cursor-pointer"
-                  aria-label="Asistanı Kapat"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </header>
-
-            {/* Sub-header Notice / Page Context */}
-            <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span className="flex items-center gap-1 font-medium">
-                <Compass className="w-3 h-3 text-[#1E3A8A]" />
-                Aktif Sayfa:{" "}
-                <span className="text-[#17263D] font-semibold">{pathname}</span>
-              </span>
-              <span className="text-[10px] text-slate-400">
-                Alibaba Page Agent v1.12
-              </span>
-            </div>
-
-            {/* Messages Scroll Area */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 text-xs scrollbar-thin scrollbar-thumb-slate-200">
-              {messages.map((msg) => (
+          {/* Chat body: collapsed to 0 height until open */}
+          <div className="t-acc-panel">
+            <div className="t-acc-panel-inner" inert={!isOpen}>
+              <div className="relative flex flex-col h-[min(560px,calc(100svh-160px))] sm:h-[min(560px,calc(100svh-200px))]">
+                {/* A single cobalt light behind the welcome screen; it fades once the conversation starts */}
                 <div
-                  key={msg.id}
-                  className={`flex flex-col ${
-                    msg.sender === "user" ? "items-end" : "items-start"
+                  aria-hidden="true"
+                  className={`pointer-events-none absolute inset-0 rounded-t-[24px] bg-[radial-gradient(120%_70%_at_30%_0%,rgba(37,99,235,0.35),transparent_70%)] transition-opacity duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    isEmpty ? "opacity-100" : "opacity-0"
                   }`}
-                >
-                  <div
-                    className={`max-w-[88%] rounded-2xl p-3.5 leading-relaxed shadow-sm ${
-                      msg.sender === "user"
-                        ? "bg-[#17263D] text-white rounded-br-none"
-                        : msg.isFallback
-                        ? "bg-amber-50/80 text-amber-950 border border-amber-200 rounded-bl-none"
-                        : "bg-slate-100/90 text-slate-800 border border-slate-200/80 rounded-bl-none"
-                    }`}
+                />
+                {/* No header band: reset/close float over the top of the conversation */}
+                <div
+                  className={`pointer-events-none absolute inset-x-0 top-0 z-10 h-16 rounded-t-[24px] bg-gradient-to-b from-[#0B1524] from-60% to-transparent ${
+                    isEmpty ? "hidden" : ""
+                  }`}
+                />
+                <div className="absolute top-2 right-2 z-20 flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={handleResetChat}
+                    title="Sohbeti temizle"
+                    aria-label="Sohbeti temizle"
+                    className="size-10 sm:size-9 inline-flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer focus-ring-light"
                   >
-                    <div className="whitespace-pre-line font-normal text-[12.5px]">
-                      {msg.text}
-                    </div>
-
-                    {/* Sources Badge */}
-                    {msg.sources && msg.sources.length > 0 && (
-                      <div className="mt-3 pt-2.5 border-t border-slate-200/60 flex flex-wrap gap-1.5 items-center">
-                        <span className="text-[10px] font-semibold text-slate-500">
-                          Kaynak:
-                        </span>
-                        {msg.sources.map((s, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => {
-                              router.push(s.route);
-                              if (window.innerWidth < 640) setIsOpen(false);
-                            }}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white text-[#1E3A8A] font-semibold text-[10.5px] border border-blue-200 hover:bg-blue-50 transition-colors shadow-2xs cursor-pointer"
-                          >
-                            <span>{s.title}</span>
-                            <ExternalLink className="w-2.5 h-2.5 text-blue-500" />
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Direct Action Buttons */}
-                    {msg.actions && msg.actions.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {msg.actions.map((act, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => handleActionClick(act)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#17263D] to-[#1E3A8A] text-white font-bold text-[11px] shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-                          >
-                            {act.type === "OPEN_ADMISSION_MODAL" && (
-                              <Calendar className="w-3 h-3 text-amber-400" />
-                            )}
-                            {act.type === "NAVIGATE" && (
-                              <ArrowRight className="w-3 h-3 text-blue-300" />
-                            )}
-                            {act.type === "CALL_PHONE" && (
-                              <Phone className="w-3 h-3 text-emerald-400" />
-                            )}
-                            <span>{act.label}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <span className="text-[10px] text-slate-400 mt-1 px-1">
-                    {msg.timestamp}
-                  </span>
-                </div>
-              ))}
-
-              {/* Typing indicator */}
-              {isTyping && (
-                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-2xl w-fit border border-slate-200 text-slate-500 text-xs">
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#1E3A8A] animate-bounce" />
-                    <span
-                      className="w-2 h-2 rounded-full bg-[#C59B27] animate-bounce"
-                      style={{ animationDelay: "150ms" }}
-                    />
-                    <span
-                      className="w-2 h-2 rounded-full bg-[#17263D] animate-bounce"
-                      style={{ animationDelay: "300ms" }}
-                    />
-                  </div>
-                  <span className="text-[11px] font-medium text-slate-600">
-                    Doğrulanmış bilgiler taranıyor...
-                  </span>
-                </div>
-              )}
-
-              <div ref={chatEndRef} />
-            </div>
-
-            {/* Suggested Chips Carousel */}
-            {messages.length <= 3 && !isTyping && (
-              <div className="px-4 py-2 border-t border-slate-100 bg-slate-50/70">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-[#C59B27]" />
-                  Önerilen Hızlı Sorular
-                </div>
-                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                  {SUGGESTED_QUESTIONS.map((q, idx) => (
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                  {process.env.NODE_ENV === "development" && (
                     <button
-                      key={idx}
                       type="button"
-                      onClick={() => handleSendMessage(q)}
-                      className="whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700 text-[11px] hover:border-[#1E3A8A] hover:text-[#1E3A8A] hover:bg-blue-50/50 transition-all cursor-pointer font-medium shadow-2xs"
+                      onClick={() => setIsSettingsOpen(true)}
+                      title="Geliştirici ayarları"
+                      aria-label="Geliştirici ayarları"
+                      className="size-10 sm:size-9 inline-flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer focus-ring-light"
                     >
-                      {q}
+                      <Settings className="w-4 h-4" />
                     </button>
-                  ))}
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    title="Kapat"
+                    aria-label="Asistanı kapat"
+                    className="size-10 sm:size-9 inline-flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer focus-ring-light"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
+
+                <div className="relative flex-1 min-h-0">
+                {/* Exactly one view is mounted at a time, so welcome and chat can never overlap */}
+                {isEmpty ? (
+                  <motion.div
+                    key="welcome"
+                    initial={chatRun > 0 ? { opacity: 0, y: 8, filter: "blur(2px)" } : false}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={WELCOME_ENTER}
+                    className="absolute inset-0 overflow-y-auto flex flex-col px-4 pt-4 pb-3 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.2)_transparent]"
+                  >
+                    {/* Same layoutId as the greeting bubble's avatar: the crest flies there on the first question */}
+                    <motion.div layoutId={avatarLayoutId} transition={{ duration: OPENING.crest, ease: ENTER_EASE }} className="size-10">
+                      <Image
+                        src="/images/bcn/logo-crest.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="size-full rounded-full bg-white object-contain ring-1 ring-white/20"
+                      />
+                    </motion.div>
+                    <h2 className="mt-5 text-2xl font-semibold leading-tight tracking-tight text-white text-balance">
+                      {greetingFor(hour)},
+                      <span className="block text-slate-300">size nasıl yardımcı olabilirim?</span>
+                    </h2>
+
+                    {/* All starters stacked in view: nothing hidden behind a sideways scroll */}
+                    <div className="mt-auto pt-6 flex flex-col gap-2">
+                      {INITIAL_MESSAGE.actions?.map((act) => (
+                        <WelcomeCard
+                          key={act.label}
+                          icon={act.type === "OPEN_ADMISSION_MODAL" ? Calendar : MapPin}
+                          label={act.label}
+                          onClick={() => handleActionClick(act)}
+                        />
+                      ))}
+                      {INITIAL_MESSAGE.suggestions?.map((q, i) => (
+                        <WelcomeCard
+                          key={q}
+                          icon={SUGGESTION_ICONS[i] ?? Sparkles}
+                          label={q}
+                          onClick={() => handleSendMessage(q)}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : (
+                <div
+                  key="chat"
+                  className="absolute inset-0 overflow-y-auto px-3 pt-12 pb-3 flex flex-col gap-4 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.2)_transparent]">
+                  <div className="mt-auto" aria-hidden="true" />
+                  {messages.map((msg, index) => {
+                    const isUser = msg.sender === "user";
+                    // The conversation is just starting: greeting arrives first, then the visitor's question
+                    const isOpening = messages.length === 2 && !messages[1].restored;
+                    const motionProps =
+                      msg.restored || (msg.isWelcome && !isOpening)
+                        ? { initial: false as const }
+                        : enter(isOpening ? (index === 0 ? OPENING.greeting : OPENING.question) : 0);
+                    return (
+                      <motion.div
+                        key={msg.id}
+                        layout="position"
+                        transition={ROW_LAYOUT}
+                        className={`flex gap-2 ${isUser ? "justify-end" : "items-start"}`}
+                      >
+                        {!isUser &&
+                          (msg.isWelcome ? (
+                            <motion.div layoutId={avatarLayoutId} transition={{ duration: OPENING.crest, ease: ENTER_EASE }} className="shrink-0">
+                              <AssistantAvatar />
+                            </motion.div>
+                          ) : (
+                            <motion.div {...motionProps} className="shrink-0">
+                              <AssistantAvatar />
+                            </motion.div>
+                          ))}
+                        <motion.div
+                          {...motionProps}
+                          className={`flex flex-col min-w-0 ${isUser ? "items-end max-w-[85%]" : "items-start flex-1"}`}
+                        >
+                          <div
+                            className={`max-w-full rounded-2xl p-3 leading-relaxed ${
+                              isUser
+                                ? "bg-[#1E3A8A] text-white rounded-br-md"
+                                : "bg-white/[0.06] text-slate-100 border border-white/10 rounded-tl-md"
+                            }`}
+                          >
+                            <div className="whitespace-pre-line text-sm">
+                              {msg.isWelcome ? `${greetingFor(hour)}, size nasıl yardımcı olabilirim?` : msg.text}
+                            </div>
+
+                            {msg.sources && msg.sources.length > 0 && (
+                              <div className="mt-3 pt-2.5 border-t border-white/10 flex flex-wrap gap-1.5 items-center">
+                                <span className="text-xs font-semibold text-slate-300">Kaynak:</span>
+                                {msg.sources.map((src, idx) => (
+                                  <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => {
+                                      router.push(src.route);
+                                      if (window.innerWidth < 640) setIsOpen(false);
+                                    }}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-white font-semibold text-xs border border-white/20 hover:bg-white/10 transition-colors cursor-pointer"
+                                  >
+                                    <span>{src.title}</span>
+                                    <ExternalLink className="w-3 h-3" aria-hidden="true" />
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+
+                            {!msg.isWelcome && msg.actions && msg.actions.length > 0 && (
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {msg.actions.map((act, i) => (
+                                  <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => handleActionClick(act)}
+                                    className="inline-flex items-center gap-1.5 min-h-9 px-3 rounded-lg border border-white/20 text-white font-semibold text-xs hover:bg-white/10 transition-colors cursor-pointer"
+                                  >
+                                    <ActionIcon type={act.type} />
+                                    <span>{act.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {!msg.isWelcome && <span className="text-xs text-slate-400 mt-1 px-1">{msg.timestamp}</span>}
+                        </motion.div>
+                      </motion.div>
+                    );
+                  })}
+
+                  {isTyping && (
+                    <motion.div
+                      {...enter(messages.length === 2 && !messages[1].restored ? OPENING.typing : 0.15)}
+                      layout="position"
+                      className="flex items-start gap-2"
+                    >
+                    <AssistantAvatar />
+                    <div className="flex items-center gap-2 p-3 rounded-2xl rounded-tl-md w-fit bg-white/[0.06] border border-white/10 text-xs" role="status">
+                      <div className="flex gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                      </div>
+                      <span className="text-slate-300">Yanıt hazırlanıyor…</span>
+                    </div>
+                    </motion.div>
+                  )}
+
+                  <div ref={chatEndRef} />
+                </div>
+                )}
+                </div>
+
+                <p className="px-4 pb-2 text-center text-xs text-slate-400">
+                  Yapay zekâ hata yapabilir. Kesin bilgi için{" "}
+                  <a href={PHONE_HREF} className="font-semibold text-white underline underline-offset-2 whitespace-nowrap">
+                    {INSTITUTION_INFO.phone}
+                  </a>
+                </p>
+
               </div>
-            )}
+            </div>
+          </div>
 
-            {/* Input Bar */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage();
-              }}
-              className="p-3 bg-white border-t border-slate-100 flex items-center gap-2"
+          {/* Input row: the same row in both states */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const text = inputVal.trim();
+              if (!isOpen) setIsOpen(true);
+              if (text) handleSendMessage(text);
+            }}
+            className="flex items-center gap-1.5 h-12 px-1.5 shrink-0"
+          >
+            <button
+              type="button"
+              onClick={() => setIsOpen(true)}
+              aria-label="Yapay zekâ asistanını aç"
+              className="size-9 shrink-0 inline-flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer focus-ring-light"
             >
-              <input
-                ref={inputRef}
-                type="text"
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Örn: Kanada OSSD nedir, randevu nasıl alınır?"
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]/30 focus:border-[#1E3A8A] transition-all font-medium"
-              />
-
-              <button
-                type="submit"
-                disabled={!inputVal.trim() || isTyping}
-                className="w-10 h-10 rounded-xl bg-[#17263D] text-white flex items-center justify-center hover:bg-[#1E3A8A] active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition-all shadow-md cursor-pointer"
-                aria-label="Gönder"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
-
-            {/* Footer Tag */}
-            <footer className="px-4 py-1.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
-              <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                Sıfır Maliyet • Yerel Doğrulanmış RAG Motoru
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsSettingsOpen(true)}
-                className="hover:text-slate-600 transition-colors cursor-pointer"
-              >
-                Model Ayarı
-              </button>
-            </footer>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <Sparkles className="w-4 h-4" aria-hidden="true" />
+            </button>
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              aria-label="Yapay zekâ asistanına soru sorun"
+              placeholder={isOpen ? "Sorunuzu yazın…" : "Yapay zekâ asistanına sorun…"}
+              className="flex-1 min-w-0 bg-transparent text-sm text-white placeholder:text-white/70 focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={isOpen && (!inputVal.trim() || isTyping)}
+              aria-label={inputVal.trim() ? "Soruyu gönder" : "Yapay zekâ asistanını aç"}
+              aria-expanded={isOpen}
+              className={`size-9 shrink-0 inline-flex items-center justify-center rounded-full transition-colors cursor-pointer focus-ring-light disabled:opacity-40 disabled:cursor-not-allowed ${
+                inputVal.trim() ? "bg-[#2563EB] text-white hover:bg-[#1D4ED8]" : "bg-white/10 text-white/70 hover:bg-white/20"
+              }`}
+            >
+              <ArrowUp className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </form>
+        </div>
+      </div>
 
       {/* Settings Modal (Alibaba PageAgent Configuration) */}
       <AnimatePresence>
-        {isSettingsOpen && (
+        {process.env.NODE_ENV === "development" && isSettingsOpen && (
           <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -520,7 +607,7 @@ export default function SmartWebAssistant() {
                     <h3 className="font-bold text-sm text-[#17263D]">
                       Alibaba Page Agent Ayarları
                     </h3>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-xs text-slate-500">
                       Özerk Tarayıcı & Model Entegrasyonu
                     </p>
                   </div>
@@ -528,14 +615,14 @@ export default function SmartWebAssistant() {
                 <button
                   type="button"
                   onClick={() => setIsSettingsOpen(false)}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
+                  className="p-1 text-slate-500 hover:text-slate-600 rounded-lg cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="py-4 space-y-4 text-xs">
-                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-[11px] leading-relaxed">
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs leading-relaxed">
                   <span className="font-bold">Aktif Çalışma Modu:</span> Varsayılan
                   olarak web sitemiz{" "}
                   <strong>ücretsiz ve sıfır API maliyeti</strong> olan BCN Doğrulanmış
@@ -572,7 +659,7 @@ export default function SmartWebAssistant() {
                 {pageAgentConfig.enabled && (
                   <div className="space-y-3 pt-2">
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">
                         Model Base URL (OpenAI / Qwen / Ollama)
                       </label>
                       <input
@@ -590,7 +677,7 @@ export default function SmartWebAssistant() {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">
                         API Anahtarı (API Key)
                       </label>
                       <input
@@ -605,14 +692,14 @@ export default function SmartWebAssistant() {
                         placeholder="sk-..."
                         className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-xs"
                       />
-                      <span className="text-[10px] text-slate-400 mt-0.5 block">
+                      <span className="text-xs text-slate-500 mt-0.5 block">
                         API anahtarınız yalnızca tarayıcınızın yerel depolama
                         alanında saklanır.
                       </span>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">
                         Model Adı
                       </label>
                       <input
@@ -655,4 +742,47 @@ export default function SmartWebAssistant() {
       </aside>
     </>
   );
+}
+
+// School crest as the assistant's small profile picture next to its messages
+function AssistantAvatar() {
+  return (
+    <Image
+      src="/images/bcn/logo-crest.png"
+      alt=""
+      width={28}
+      height={28}
+      className="size-7 shrink-0 mt-0.5 rounded-full bg-white object-contain ring-1 ring-white/20"
+    />
+  );
+}
+
+function WelcomeCard({
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full min-h-12 shrink-0 flex items-center gap-3 px-3 py-2.5 rounded-2xl border border-white/10 bg-white/[0.05] text-left hover:bg-white/10 transition-colors cursor-pointer focus-ring-light"
+    >
+      <span className="size-7 shrink-0 inline-flex items-center justify-center rounded-full bg-white/10 text-white">
+        <Icon className="w-3.5 h-3.5" aria-hidden="true" />
+      </span>
+      <span className="text-sm leading-snug text-slate-100">{label}</span>
+    </button>
+  );
+}
+
+function ActionIcon({ type }: { type: AssistantAction["type"] }) {
+  if (type === "OPEN_ADMISSION_MODAL") return <Calendar className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />;
+  if (type === "NAVIGATE") return <ArrowRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />;
+  if (type === "CALL_PHONE") return <Phone className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />;
+  return null;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useCallback, useContext, useState, ReactNode } from "react";
 
 interface ModalContextType {
   isAdmissionOpen: boolean;
@@ -20,9 +20,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     setIsAdmissionOpen(true);
   };
 
-  const closeAdmission = () => {
+  const closeAdmission = useCallback(() => {
     setIsAdmissionOpen(false);
-  };
+  }, []);
 
   return (
     <ModalContext.Provider

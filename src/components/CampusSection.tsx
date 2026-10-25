@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Compass, Building2, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { FACILITIES } from "@/data/bcnData";
 
 export default function CampusSection() {
@@ -13,22 +13,21 @@ export default function CampusSection() {
   const current = featuredFacilities[selectedIdx] || featuredFacilities[0];
 
   return (
-    <section className="w-full h-full flex flex-col justify-between bg-white text-[#17263D] px-5 sm:px-8 lg:px-12 py-5 sm:py-7 overflow-hidden">
+    <section className="w-full flex flex-col bg-white text-[#17263D] px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24 overflow-hidden">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 shrink-0 max-w-7xl 2xl:max-w-[1520px] mx-auto w-full">
         <div>
-          <span className="text-[11px] font-bold tracking-widest text-[#C59B27] uppercase flex items-center gap-1.5 mb-1">
-            <Compass className="w-3.5 h-3.5 text-[#C59B27]" />
+          <span className="text-sm font-semibold text-[var(--bcn-gold-ink)] flex items-center gap-1.5 mb-1">
             <span>12.000 m² Bütünsel Öğrenme ve Yaşam Alanı</span>
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#17263D]">
-            Madenler / Çekmeköy Kampüsümüz.
+            Madenler / Çekmeköy Kampüsümüz
           </h2>
         </div>
 
         <Link
           href="/kampusumuz"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#1E3A8A] hover:text-[#17263D] transition-colors group cursor-pointer"
+          className="inline-flex items-center min-h-11 gap-2 text-xs sm:text-sm font-bold text-[#1E3A8A] hover:text-[#17263D] transition-colors group cursor-pointer"
         >
           <span>Tüm Tesisleri İnceleyin</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -36,9 +35,9 @@ export default function CampusSection() {
       </div>
 
       {/* Main Interactive Stage */}
-      <div className="flex-1 min-h-0 w-full max-w-7xl 2xl:max-w-[1520px] mx-auto my-3 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-stretch">
+      <div className="w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 lg:h-[540px] grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-stretch">
         {/* Left: Dynamic Main Stage Visual Display */}
-        <div className="lg:col-span-7 relative h-full min-h-[220px] rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 bg-slate-950 group">
+        <div className="lg:col-span-7 relative h-[280px] sm:h-[380px] lg:h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 bg-slate-950 group">
           <AnimatePresence mode="wait">
             <motion.div
               key={current.id}
@@ -62,8 +61,8 @@ export default function CampusSection() {
 
           {/* Floating Campus Badge */}
           <div className="absolute top-4 left-4 z-10">
-            <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#17263D] text-[11px] font-bold shadow-md inline-flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#17263D] text-xs font-bold shadow-md inline-flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden="true" />
               <span>{current.category}</span>
             </span>
           </div>
@@ -80,7 +79,7 @@ export default function CampusSection() {
         </div>
 
         {/* Right: Interactive Facility Selector Tabs */}
-        <div className="lg:col-span-5 flex flex-col justify-between gap-2 overflow-y-auto no-scrollbar">
+        <div className="lg:col-span-5 flex flex-col justify-center gap-3">
           {featuredFacilities.map((fac, idx) => {
             const isSelected = selectedIdx === idx;
             return (
@@ -100,7 +99,7 @@ export default function CampusSection() {
                     <span>{fac.name}</span>
                   </div>
                   <div
-                    className={`text-[11px] line-clamp-1 ${
+                    className={`text-xs line-clamp-1 ${
                       isSelected ? "text-slate-300" : "text-slate-500"
                     }`}
                   >
@@ -109,7 +108,7 @@ export default function CampusSection() {
                 </div>
 
                 <span
-                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                  className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${
                     isSelected
                       ? "bg-amber-400 text-slate-900"
                       : "bg-white text-slate-600 border border-slate-200"
@@ -124,7 +123,7 @@ export default function CampusSection() {
       </div>
 
       {/* Grounding Bottom Line */}
-      <div className="shrink-0 text-center text-[11px] text-slate-500 py-1">
+      <div className="shrink-0 text-center text-xs text-slate-500 py-1">
         Çekmeköy Metro İstasyonu&apos;na yürüme mesafesinde, çift hostesli güvenli servis filosu
       </div>
     </section>

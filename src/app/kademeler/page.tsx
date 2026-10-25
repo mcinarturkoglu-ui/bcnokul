@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SubpageHero from "@/components/SubpageHero";
 import { LEVELS } from "@/data/bcnData";
-import { ArrowRight, CheckCircle2, Sparkles, BookOpen, Clock, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const metadata = {
   title: "Eğitim Kademeleri | BCN Eğitim Kurumları",
@@ -49,7 +49,7 @@ export default function LevelsOverviewPage() {
                     <span className="text-xs font-mono text-amber-300 uppercase tracking-wider block">
                       {lvl.ageGroup}
                     </span>
-                    <h3 className="text-2xl font-bold">{lvl.name}</h3>
+                    <p className="text-2xl font-bold">{lvl.name}</p>
                   </div>
                 </div>
 
@@ -72,7 +72,7 @@ export default function LevelsOverviewPage() {
                     {lvl.keyFeatures.map((feat, fIdx) => (
                       <div key={fIdx} className="p-3 rounded-xl bg-white border border-slate-200/70">
                         <div className="text-xs font-bold text-[#17263D]">{feat.title}</div>
-                        <div className="text-[11px] text-slate-500">{feat.desc}</div>
+                        <div className="text-xs text-slate-500">{feat.desc}</div>
                       </div>
                     ))}
                   </div>

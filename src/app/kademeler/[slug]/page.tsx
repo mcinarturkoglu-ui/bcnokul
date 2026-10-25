@@ -4,12 +4,28 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import SubpageHero from "@/components/SubpageHero";
 import { LEVELS } from "@/data/bcnData";
-import { ArrowRight, CheckCircle2, Sparkles, BookOpen, Clock, Users, ShieldCheck } from "lucide-react";
+import { Check } from "lucide-react";
 
 export function generateStaticParams() {
   return LEVELS.map((lvl) => ({
     slug: lvl.slug,
   }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const level = LEVELS.find((l) => l.slug === slug);
+  if (!level) return {};
+
+  return {
+    title: `${level.name} | BCN Eğitim Kurumları`,
+    description: level.description,
+    alternates: { canonical: `/kademeler/${level.slug}` },
+  };
 }
 
 export default async function LevelDetailPage({
@@ -99,16 +115,17 @@ export default async function LevelDetailPage({
 
           {/* Curriculum Tags */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               Entegre Müfredat ve Sertifikasyonlar
             </h4>
             <div className="flex flex-wrap gap-3">
               {level.curriculum.map((item, idx) => (
                 <span
                   key={idx}
-                  className="px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-[#17263D]"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-[#17263D]"
                 >
-                  ✓ {item}
+                  <Check className="w-3.5 h-3.5 text-emerald-700" aria-hidden="true" />
+                  {item}
                 </span>
               ))}
             </div>

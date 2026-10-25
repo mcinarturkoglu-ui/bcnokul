@@ -117,7 +117,7 @@ export const LEVELS: Level[] = [
   {
     id: "primary",
     slug: "ilkokul",
-    name: "İlkokul (Primary School)",
+    name: "İlkokul",
     subtitle: "IB PYP Sorgulama Temelli Eğitim",
     ageGroup: "1 - 4. Sınıf",
     tagline: "Yalnızca bilgi edinmek değil; anlam kurmak, bağlantı kurmak ve dünyayı sorgulamak.",
@@ -141,7 +141,7 @@ export const LEVELS: Level[] = [
   {
     id: "middle",
     slug: "ortaokul",
-    name: "Ortaokul (Middle School)",
+    name: "Ortaokul",
     subtitle: "Akademik Disiplin & Karakter İnşası",
     ageGroup: "5 - 8. Sınıf",
     tagline: "7. sınıftan başlayan LGS hazırlık sistemi, küresel farkındalık ve etik liderlik.",

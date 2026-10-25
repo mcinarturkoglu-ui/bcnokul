@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const THREE_PILLARS = [
   {
@@ -32,22 +32,21 @@ const THREE_PILLARS = [
 
 export default function ApproachSection() {
   return (
-    <section className="w-full h-full flex flex-col justify-between bg-white text-[#17263D] px-5 sm:px-8 lg:px-12 py-5 sm:py-7 overflow-hidden">
+    <section className="w-full flex flex-col bg-white text-[#17263D] px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24 overflow-hidden">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 shrink-0 max-w-7xl 2xl:max-w-[1520px] mx-auto w-full">
         <div>
-          <span className="text-[11px] font-bold tracking-widest text-[#C59B27] uppercase flex items-center gap-1.5 mb-1">
-            <Sparkles className="w-3 h-3 text-[#C59B27]" />
+          <span className="text-sm font-semibold text-[var(--bcn-gold-ink)] flex items-center gap-1.5 mb-1">
             <span>Akademik Metodoloji</span>
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#17263D]">
-            Eğitimde Üç Temel Sütun.
+            Eğitimde Üç Temel Sütun
           </h2>
         </div>
 
         <Link
           href="/egitim-modelimiz"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#1E3A8A] hover:text-[#17263D] transition-colors group cursor-pointer"
+          className="inline-flex items-center min-h-11 gap-2 text-xs sm:text-sm font-bold text-[#1E3A8A] hover:text-[#17263D] transition-colors group cursor-pointer"
         >
           <span>Eğitim Modelimizin Ayrıntıları</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -55,13 +54,13 @@ export default function ApproachSection() {
       </div>
 
       {/* 3 Pillars Grid Stage */}
-      <div className="flex-1 min-h-0 w-full max-w-7xl 2xl:max-w-[1520px] mx-auto my-3 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8 items-stretch">
+      <div className="flex-1 min-h-0 w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8 items-stretch">
         {THREE_PILLARS.map((pillar, idx) => (
           <motion.div
             key={pillar.number}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: idx * 0.1 }}
             className="flex flex-col justify-between rounded-3xl bg-slate-50 border border-slate-200/80 p-5 group hover:shadow-xl hover:border-[#1E3A8A]/40 transition-all duration-300"
           >
@@ -74,11 +73,6 @@ export default function ApproachSection() {
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover group-hover:scale-106 transition-transform duration-700"
               />
-              <div className="absolute top-3 left-3 z-10">
-                <span className="w-8 h-8 rounded-xl bg-white/95 backdrop-blur-md flex items-center justify-center text-xs font-bold text-[#17263D] shadow-md font-mono">
-                  {pillar.number}
-                </span>
-              </div>
             </div>
 
             {/* Content Details */}
@@ -95,10 +89,9 @@ export default function ApproachSection() {
               <div className="pt-2">
                 <Link
                   href="/egitim-modelimiz"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1E3A8A] group-hover:text-[#17263D] transition-colors"
+                  className="inline-flex items-center min-h-11 gap-1.5 text-xs font-bold text-[#1E3A8A] group-hover:text-[#17263D] transition-colors"
                 >
                   <span>Metodolojiyi İncele</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -107,7 +100,7 @@ export default function ApproachSection() {
       </div>
 
       {/* Grounding Bottom Line */}
-      <div className="shrink-0 text-center text-[11px] text-slate-500 py-1">
+      <div className="shrink-0 text-center text-xs text-slate-500 py-1">
         Zihinsel disiplin, erken çocukluktan lise mezuniyetine kadar her kademede uygulanır
       </div>
     </section>

@@ -7,22 +7,7 @@ import SubpageHero from "@/components/SubpageHero";
 import { LEADERSHIP_TEAM, FOUNDER_INFO, INSTITUTION_INFO, LeaderMember } from "@/data/bcnData";
 import { useModal } from "@/context/ModalContext";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Quote,
-  GraduationCap,
-  Sparkles,
-  Building2,
-  Calendar,
-  Phone,
-  Mail,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  Users,
-  X,
-  Award,
-  BookOpen
-} from "lucide-react";
+import { Quote, GraduationCap, BarChart3, Building2, Phone, Mail, ArrowRight, ShieldCheck, CheckCircle2, Users, X } from "lucide-react";
 
 export default function LeadershipPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -84,7 +69,7 @@ export default function LeadershipPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-br from-[#101F38] via-[#172B4D] to-[#0B1528] rounded-3xl p-8 sm:p-12 lg:p-14 text-white shadow-2xl relative overflow-hidden border border-slate-700/60">
             {/* Ambient Background Accents */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
@@ -103,12 +88,12 @@ export default function LeadershipPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
                     <div className="absolute bottom-5 left-5 right-5 text-center">
-                      <span className="px-3 py-1 rounded-full bg-amber-400 text-[#17263D] text-[11px] font-extrabold uppercase tracking-widest inline-block shadow-md">
+                      <span className="px-3 py-1 rounded-full bg-amber-400 text-[#17263D] text-xs font-extrabold uppercase tracking-widest inline-block shadow-md">
                         Kurucumuz
                       </span>
-                      <h3 className="text-2xl font-black text-white mt-2 tracking-tight">
+                      <h2 className="text-2xl font-black text-white mt-2 tracking-tight">
                         {FOUNDER_INFO.name}
-                      </h3>
+                      </h2>
                       <p className="text-xs text-amber-200/90 font-medium">
                         {FOUNDER_INFO.title}
                       </p>
@@ -119,10 +104,7 @@ export default function LeadershipPage() {
 
               {/* Founder Text & Principles */}
               <div className="lg:col-span-7 space-y-6">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-amber-300 text-xs font-bold uppercase tracking-wider border border-white/15 backdrop-blur-md">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Kurucu Mesajı & Eğitim Vizyonu</span>
-                </div>
+                <p className="text-sm font-semibold text-amber-300">Kurucu Mesajı ve Eğitim Vizyonu</p>
 
                 <div className="relative bg-white/[0.07] border border-white/15 rounded-2xl p-6 sm:p-7 backdrop-blur-md shadow-inner">
                   <Quote className="w-10 h-10 text-amber-400/30 absolute top-4 right-4" />
@@ -150,7 +132,7 @@ export default function LeadershipPage() {
                       <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                       <div>
                         <div className="text-xs font-bold text-white tracking-wide">{pr.title}</div>
-                        <div className="text-[11px] text-slate-300 leading-snug mt-0.5">{pr.desc}</div>
+                        <div className="text-xs text-slate-300 leading-snug mt-0.5">{pr.desc}</div>
                       </div>
                     </div>
                   ))}
@@ -159,7 +141,7 @@ export default function LeadershipPage() {
                 <div className="pt-3 flex flex-wrap gap-4">
                   <button
                     onClick={() => openAdmission()}
-                    className="sheen-btn inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#17263D] font-extrabold text-xs uppercase tracking-wider transition-all shadow-xl shadow-amber-400/20 cursor-pointer"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#17263D] font-extrabold text-xs uppercase tracking-wider transition-all shadow-xl shadow-amber-400/20 cursor-pointer"
                   >
                     <span>Yönetimle Tanışma Randevusu Al</span>
                     <ArrowRight className="w-4 h-4" />
@@ -208,7 +190,7 @@ export default function LeadershipPage() {
                 >
                   <span>{cat.label}</span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    className={`px-2 py-0.5 rounded-full text-xs font-bold ${
                       selectedCategory === cat.id
                         ? "bg-amber-400 text-[#17263D]"
                         : "bg-slate-100 text-slate-600"
@@ -252,7 +234,7 @@ export default function LeadershipPage() {
 
                       {/* Role category badge over photo */}
                       <div className="absolute top-3 left-3">
-                        <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#17263D] text-[10px] font-extrabold shadow-sm border border-slate-100">
+                        <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#17263D] text-xs font-extrabold shadow-sm border border-slate-100">
                           {member.category}
                         </span>
                       </div>
@@ -271,7 +253,7 @@ export default function LeadershipPage() {
                     {/* Card Body */}
                     <div className="p-5 space-y-3">
                       <div className="p-3 rounded-xl bg-[#F7F8FA] border border-slate-100 group-hover:border-amber-200/50 transition-colors">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-[#1E3A8A]">
+                        <div className="text-xs font-bold uppercase tracking-wider text-[#1E3A8A]">
                           Uzmanlık & Sorumluluk
                         </div>
                         <div className="text-xs font-semibold text-slate-800 mt-0.5 line-clamp-1">
@@ -347,7 +329,7 @@ export default function LeadershipPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-[#17263D] text-[10px] font-extrabold uppercase">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-[#17263D] text-xs font-extrabold uppercase">
                       {activeLeaderModal.category}
                     </span>
                     <h3 className="text-xl font-black mt-1">{activeLeaderModal.name}</h3>
@@ -359,7 +341,7 @@ export default function LeadershipPage() {
                 <div className="sm:col-span-7 p-6 sm:p-8 space-y-5 flex flex-col justify-between">
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-[#1E3A8A]">
+                      <div className="text-xs font-bold uppercase tracking-wider text-[#1E3A8A]">
                         Sorumluluk Alanı & Pedagojik Odak
                       </div>
                       <h4 className="text-sm font-bold text-[#17263D]">
@@ -456,7 +438,7 @@ export default function LeadershipPage() {
 
             <div className="p-6 rounded-2xl bg-[#F7F8FA] border border-slate-200/80 space-y-3 hover:shadow-md transition-all">
               <div className="w-12 h-12 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
-                <Sparkles className="w-6 h-6" />
+                <BarChart3 className="w-6 h-6" aria-hidden="true" />
               </div>
               <h3 className="text-base font-bold text-[#17263D]">Veriye Dayalı Takip</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
@@ -483,7 +465,7 @@ export default function LeadershipPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <button
               onClick={() => openAdmission()}
-              className="sheen-btn w-full sm:w-auto px-8 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#17263D] font-extrabold text-sm uppercase tracking-wider transition-all shadow-xl shadow-amber-400/20 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#17263D] font-extrabold text-sm uppercase tracking-wider transition-all shadow-xl shadow-amber-400/20 cursor-pointer"
             >
               Tanışma Randevusu Al
             </button>

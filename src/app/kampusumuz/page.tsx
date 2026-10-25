@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SubpageHero from "@/components/SubpageHero";
 import { FACILITIES, INSTITUTION_INFO } from "@/data/bcnData";
-import { MapPin, Navigation, Phone, CheckCircle2, Building2, Shield, ArrowRight } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export const metadata = {
   title: "Kampüsümüz & Fiziki Olanaklar | BCN Eğitim Kurumları",
@@ -17,7 +17,7 @@ export default function CampusPage() {
         badge="Fiziki Olanaklar"
         title="Madenler / Çekmeköy Kampüsümüz"
         subtitle="12.000m² modern kapalı ve açık alana sahip, akıllı mimariyle tasarlanmış entegre eğitim yerleşkesi."
-        bgImage="/images/bcn/campus-building-wide.jpg"
+        bgImage="/images/bcn/campus-gate-exterior.jpg"
         breadcrumbs={[{ label: "Kampüsümüz" }]}
       />
 
@@ -99,7 +99,7 @@ export default function CampusPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
                     <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-1 rounded-full bg-white/90 text-[#17263D] text-[11px] font-bold">
+                      <span className="px-2.5 py-1 rounded-full bg-white/90 text-[#17263D] text-xs font-bold">
                         {fac.category}
                       </span>
                     </div>
@@ -115,7 +115,7 @@ export default function CampusPage() {
 
                     <div className="pt-3 border-t border-slate-200 space-y-1.5">
                       {fac.highlights.map((h, i) => (
-                        <div key={i} className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                        <div key={i} className="text-xs text-slate-500 flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                           <span>{h}</span>
                         </div>

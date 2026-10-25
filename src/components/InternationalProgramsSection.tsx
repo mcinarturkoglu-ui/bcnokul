@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Globe, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const PROGRAMS = [
   {
@@ -39,25 +39,24 @@ const PROGRAMS = [
 
 export default function InternationalProgramsSection() {
   return (
-    <section className="w-full h-full flex flex-col justify-between bg-[#0B1524] text-white px-5 sm:px-8 lg:px-12 py-5 sm:py-7 overflow-hidden relative">
+    <section className="w-full flex flex-col bg-[#0B1524] text-white px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24 overflow-hidden relative">
       {/* Background Subtle Radial Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#1E3A8A]/20 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Top Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-3 shrink-0 max-w-7xl 2xl:max-w-[1520px] mx-auto w-full">
         <div>
-          <span className="text-[11px] font-bold tracking-widest text-[#C59B27] uppercase flex items-center gap-1.5 mb-1">
-            <Globe className="w-3.5 h-3.5 text-[#C59B27]" />
+          <span className="text-sm font-semibold text-[#C59B27] flex items-center gap-1.5 mb-1">
             <span>Küresel Akreditasyon ve Diplomalar</span>
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
-            Uluslararası Programlarımız.
+            Uluslararası Programlarımız
           </h2>
         </div>
 
         <Link
           href="/uluslararasi-programlar"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-300 hover:text-white transition-colors group cursor-pointer"
+          className="inline-flex items-center min-h-11 gap-2 text-xs sm:text-sm font-bold text-amber-300 hover:text-white transition-colors group cursor-pointer"
         >
           <span>Tüm Uluslararası Ağımız</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -65,13 +64,13 @@ export default function InternationalProgramsSection() {
       </div>
 
       {/* 4 Frosted Glass Cards Stage */}
-      <div className="relative z-10 flex-1 min-h-0 w-full max-w-7xl 2xl:max-w-[1520px] mx-auto my-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-stretch">
+      <div className="relative z-10 flex-1 min-h-0 w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-stretch">
         {PROGRAMS.map((prog, idx) => (
           <motion.div
             key={prog.title}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5, delay: idx * 0.08 }}
           >
             <Link
@@ -88,7 +87,7 @@ export default function InternationalProgramsSection() {
                   className="object-cover group-hover:scale-106 transition-transform duration-700"
                 />
                 <div className="absolute top-2.5 left-2.5 z-10">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#17263D]/90 backdrop-blur-md text-[10px] font-bold text-amber-300 border border-white/10">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#17263D]/90 backdrop-blur-md text-xs font-bold text-amber-300 border border-white/10">
                     {prog.badge}
                   </span>
                 </div>
@@ -107,7 +106,6 @@ export default function InternationalProgramsSection() {
 
                 <div className="pt-2 inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 group-hover:text-white transition-colors">
                   <span>Programı İncele</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </Link>
@@ -116,7 +114,7 @@ export default function InternationalProgramsSection() {
       </div>
 
       {/* Grounding Bottom Line */}
-      <div className="relative z-10 shrink-0 text-center text-[11px] text-slate-400 py-1">
+      <div className="relative z-10 shrink-0 text-center text-xs text-slate-400 py-1">
         Kanada OSSD ve College Board AP dersleri ile doğrudan dünya üniversitelerine geçiş imkânı
       </div>
     </section>

@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import SubpageHero from "@/components/SubpageHero";
-import { Sparkles, Target, Compass, Heart, Shield, CheckCircle2, Globe, Lightbulb } from "lucide-react";
+import { Target, Compass, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
   title: "Misyon ve Vizyon | BCN Eğitim Kurumları",

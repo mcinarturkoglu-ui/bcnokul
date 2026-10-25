@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SubpageHero from "@/components/SubpageHero";
 import { FOUNDER_INFO, LEADERSHIP_TEAM, INSTITUTION_INFO } from "@/data/bcnData";
-import { ArrowRight, Quote, CheckCircle2, Shield, Brain, Sparkles, Building2, Users } from "lucide-react";
+import { ArrowRight, Quote } from "lucide-react";
 
 export const metadata = {
   title: "Hakkımızda & Kurucu Vizyonu | BCN Eğitim Kurumları",
@@ -115,7 +115,7 @@ export default function AboutPage() {
                 {FOUNDER_INFO.principles.map((pr, i) => (
                   <div key={i} className="p-4 rounded-xl bg-white border border-slate-200/80 space-y-1">
                     <h4 className="text-xs font-bold text-[#17263D]">{pr.title}</h4>
-                    <p className="text-[11px] text-slate-500 leading-relaxed">{pr.desc}</p>
+                    <p className="text-xs text-slate-500 leading-relaxed">{pr.desc}</p>
                   </div>
                 ))}
               </div>
@@ -164,7 +164,7 @@ export default function AboutPage() {
                       className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-2 left-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-white/90 text-[#17263D] text-[10px] font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-white/90 text-[#17263D] text-xs font-bold">
                         {leader.category}
                       </span>
                     </div>
@@ -172,7 +172,7 @@ export default function AboutPage() {
                   <div className="space-y-1">
                     <h3 className="text-base font-bold text-[#17263D]">{leader.name}</h3>
                     <div className="text-xs font-semibold text-[#1E3A8A]">{leader.role}</div>
-                    <p className="text-[11px] text-slate-500 pt-1 leading-relaxed">
+                    <p className="text-xs text-slate-500 pt-1 leading-relaxed">
                       {leader.focus}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export default function AboutPage() {
                 <div className="pt-4 mt-3 border-t border-slate-200/60">
                   <Link
                     href="/lider-ekibimiz"
-                    className="text-[11px] font-bold text-[#1E3A8A] hover:underline flex items-center gap-1"
+                    className="text-xs font-bold text-[#1E3A8A] hover:underline flex items-center gap-1"
                   >
                     Detaylı Profil <ArrowRight className="w-3 h-3" />
                   </Link>

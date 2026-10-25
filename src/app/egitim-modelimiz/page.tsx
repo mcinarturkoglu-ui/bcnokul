@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SubpageHero from "@/components/SubpageHero";
 import { PARENTS_ACADEMY } from "@/data/bcnData";
-import { Brain, Cpu, Sparkles, CheckCircle2, Shield, ArrowRight, HeartHandshake, Eye, BookOpen } from "lucide-react";
+import { Brain, Cpu, HeartHandshake } from "lucide-react";
 
 export const metadata = {
   title: "Eğitim Modelimiz & BCN Yaklaşımı | BCN Eğitim Kurumları",

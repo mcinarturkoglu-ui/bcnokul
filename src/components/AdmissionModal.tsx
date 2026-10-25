@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useModal } from "@/context/ModalContext";
 import { X, CheckCircle2, Calendar, Phone, Mail, User, School, ArrowRight, ShieldCheck } from "lucide-react";
-import { INSTITUTION_INFO } from "@/data/bcnData";
+import LeadFormAlert from "@/components/LeadFormAlert";
+import { whatsappHref } from "@/lib/contact";
+import { isLeadFormConfigured, submitLead, type LeadFormStatus } from "@/lib/submitLead";
 
 export default function AdmissionModal() {
   const { isAdmissionOpen, closeAdmission, selectedLevel } = useModal();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [status, setStatus] = useState<LeadFormStatus>(isLeadFormConfigured ? "idle" : "unconfigured");
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     parentName: "",
     relationship: "Anne",
@@ -18,8 +22,8 @@ export default function AdmissionModal() {
     gradeLevel: "",
     currentSchool: "",
     meetingPreference: "Kampüsü ziyaret etmek istiyorum",
-    kvkkConsent: true,
-    notificationConsent: true,
+    kvkkConsent: false,
+    notificationConsent: false,
   });
 
   useEffect(() => {
@@ -28,29 +32,54 @@ export default function AdmissionModal() {
     }
   }, [selectedLevel]);
 
-  // Lock body scroll when modal is open
+  // Lock body scroll, close on Escape, and move focus into the dialog while open
   useEffect(() => {
-    if (isAdmissionOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+    if (!isAdmissionOpen) {
       setIsSubmitted(false);
+      setStatus(isLeadFormConfigured ? "idle" : "unconfigured");
+      return;
     }
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    document.body.style.overflow = "hidden";
+    dialogRef.current?.querySelector<HTMLElement>("input, select, button")?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeAdmission();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus();
     };
-  }, [isAdmissionOpen]);
+  }, [isAdmissionOpen, closeAdmission]);
 
   if (!isAdmissionOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    if (!isLeadFormConfigured) return;
+    setStatus("sending");
+    try {
+      await submitLead(e.currentTarget, `Randevu Talebi: ${formData.level}`);
+      setIsSubmitted(true);
+    } catch {
+      setStatus("error");
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-900/60 backdrop-blur-md animate-fadeIn">
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-900/60 backdrop-blur-md animate-fadeIn"
+      onClick={closeAdmission}
+    >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="admission-title"
         className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
@@ -64,12 +93,12 @@ export default function AdmissionModal() {
             <X className="w-5 h-5" />
           </button>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/10 text-xs font-semibold text-amber-300 tracking-wider uppercase mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" aria-hidden="true"></span>
             2026 - 2027 Kayıt & Kabul Dönemi
           </div>
-          <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          <h2 id="admission-title" className="text-xl sm:text-2xl font-bold tracking-tight text-white">
             Ön Kayıt ve Kampüs Ziyaret Randevusu
-          </h3>
+          </h2>
           <p className="text-slate-300 text-xs sm:text-sm mt-1">
             Çocuğunuzun eğitim yolculuğunu birlikte planlayalım. Eğitim danışmanlarımız 24 saat içinde sizinle iletişime geçecektir.
           </p>
@@ -78,24 +107,20 @@ export default function AdmissionModal() {
         {/* Modal Body */}
         <div className="p-6 sm:p-8 max-h-[75vh] overflow-y-auto">
           {isSubmitted ? (
-            <div className="py-8 text-center space-y-5">
-              <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border-4 border-emerald-100 animate-bounce">
+            <div className="py-8 text-center space-y-5" role="status">
+              <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border-4 border-emerald-100">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <div className="space-y-2">
-                <h4 className="text-2xl font-bold text-[#17263D]">
+                <h3 className="text-2xl font-bold text-[#17263D]">
                   Başvurunuz Başarıyla Alındı
-                </h4>
+                </h3>
                 <p className="text-slate-600 text-sm max-w-md mx-auto">
                   Sayın <span className="font-semibold text-slate-800">{formData.parentName || "Velimiz"}</span>, ön kayıt ve randevu talebiniz kayıt kabul ofisimize iletilmiştir.
                 </p>
               </div>
 
               <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 max-w-md mx-auto text-left text-xs sm:text-sm space-y-2">
-                <div className="flex justify-between py-1 border-b border-slate-200/60">
-                  <span className="text-slate-500">Kayıt Takip Kodu:</span>
-                  <span className="font-mono font-semibold text-[#17263D]">BCN-2026-{Math.floor(1000 + Math.random() * 9000)}</span>
-                </div>
                 <div className="flex justify-between py-1 border-b border-slate-200/60">
                   <span className="text-slate-500">Seçilen Kademe:</span>
                   <span className="font-medium text-[#17263D]">{formData.level}</span>
@@ -108,7 +133,7 @@ export default function AdmissionModal() {
 
               <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
                 <a
-                  href={`https://wa.me/9005520512336?text=Merhaba,%20BCN%20Koleji%20için%20ön%20kayıt%20başvurusu%20yaptım.%20Bilgi%20almak%20istiyorum.`}
+                  href={whatsappHref("Merhaba, BCN Eğitim Kurumları için ön kayıt başvurusu yaptım. Bilgi almak istiyorum.")}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
@@ -126,34 +151,35 @@ export default function AdmissionModal() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              <LeadFormAlert status={status} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Veli Adı Soyadı */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-parent" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Veli Adı Soyadı *
                   </label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
+                    <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input id="modal-parent" name="parentName" autoComplete="name"
                       type="text"
                       required
                       value={formData.parentName}
                       onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
                       placeholder="Adınız ve Soyadınız"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                      className="w-full pl-10 pr-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Yakınlık Derecesi */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-relationship" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Yakınlık Derecesi
                   </label>
-                  <select
+                  <select id="modal-relationship" name="relationship"
                     value={formData.relationship}
                     onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                    className="w-full px-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                   >
                     <option value="Anne">Anne</option>
                     <option value="Baba">Baba</option>
@@ -166,35 +192,35 @@ export default function AdmissionModal() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Telefon */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-phone" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Telefon Numarası *
                   </label>
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
+                    <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input id="modal-phone" name="phone" autoComplete="tel" inputMode="tel"
                       type="tel"
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="05XX XXX XX XX"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                      className="w-full pl-10 pr-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
 
                 {/* E-posta */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-email" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     E-Posta Adresi
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
+                    <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input id="modal-email" name="email" autoComplete="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="ornek@email.com"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                      className="w-full pl-10 pr-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
@@ -203,15 +229,15 @@ export default function AdmissionModal() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Kademe */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-level" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Başvurulan Eğitim Kademesi *
                   </label>
                   <div className="relative">
-                    <School className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <select
+                    <School className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <select id="modal-level" name="level"
                       value={formData.level}
                       onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                      className="w-full pl-10 pr-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                     >
                       <option value="Aurelia Preschool">Aurelia Preschool (3-6 Yaş)</option>
                       <option value="İlkokul">İlkokul (IB PYP Aday Okulu)</option>
@@ -224,15 +250,15 @@ export default function AdmissionModal() {
 
                 {/* Sınıf Seviyesi */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-grade" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Hedef Sınıf / Yaş
                   </label>
-                  <input
+                  <input id="modal-grade" name="gradeLevel"
                     type="text"
                     value={formData.gradeLevel}
                     onChange={(e) => setFormData({ ...formData, gradeLevel: e.target.value })}
                     placeholder="Örn: 1. Sınıf / 5 Yaş / 9. Sınıf"
-                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                    className="w-full px-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                   />
                 </div>
               </div>
@@ -240,29 +266,29 @@ export default function AdmissionModal() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* İkamet */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-district" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     İkamet İlçe / Semt
                   </label>
-                  <input
+                  <input id="modal-district" name="district" autoComplete="address-level2"
                     type="text"
                     value={formData.district}
                     onChange={(e) => setFormData({ ...formData, district: e.target.value })}
                     placeholder="Örn: Çekmeköy, Ümraniye, Sancaktepe..."
-                    className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                    className="w-full px-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                   />
                 </div>
 
                 {/* Görüşme Tercihi */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="modal-meeting" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                     Randevu Tercihi
                   </label>
                   <div className="relative">
-                    <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <select
+                    <Calendar className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <select id="modal-meeting" name="meetingPreference"
                       value={formData.meetingPreference}
                       onChange={(e) => setFormData({ ...formData, meetingPreference: e.target.value })}
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
+                      className="w-full pl-10 pr-3.5 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-all"
                     >
                       <option value="Kampüsü ziyaret etmek istiyorum">Kampüsü ziyaret etmek istiyorum</option>
                       <option value="Tanışma randevusu talep ediyorum">Tanışma randevusu talep ediyorum</option>
@@ -277,6 +303,7 @@ export default function AdmissionModal() {
                 <label className="flex items-start gap-2.5 text-xs text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
+                    name="kvkkConsent"
                     required
                     checked={formData.kvkkConsent}
                     onChange={(e) => setFormData({ ...formData, kvkkConsent: e.target.checked })}
@@ -289,6 +316,7 @@ export default function AdmissionModal() {
                 <label className="flex items-start gap-2.5 text-xs text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
+                    name="notificationConsent"
                     checked={formData.notificationConsent}
                     onChange={(e) => setFormData({ ...formData, notificationConsent: e.target.checked })}
                     className="mt-0.5 rounded border-slate-300 text-[#1E3A8A] focus:ring-[#1E3A8A]"
@@ -303,14 +331,15 @@ export default function AdmissionModal() {
               <div className="pt-3">
                 <button
                   type="submit"
-                  className="sheen-btn w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#17263D] via-[#1E3A8A] to-[#17263D] text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-slate-900/25 transition-all transform active:scale-[0.99] cursor-pointer"
+                  disabled={status === "sending" || status === "unconfigured"}
+                  className="disabled:opacity-50 disabled:cursor-not-allowed w-full py-3.5 px-6 rounded-xl bg-[#17263D] hover:bg-[#1E3A8A] text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
-                  <span>Ön Kayıt Talebini Gönder</span>
+                  <span>{status === "sending" ? "Gönderiliyor…" : "Ön Kayıt Talebini Gönder"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
+              <div className="flex items-center justify-center gap-2 text-xs text-slate-500 pt-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Bilgileriniz 256-bit SSL güvenlik protokolü ile korunmaktadır.</span>
               </div>

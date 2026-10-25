@@ -10,9 +10,9 @@ export default function NotFound() {
           404
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-extrabold text-[#17263D]">
+          <h1 className="text-2xl font-extrabold text-[#17263D]">
             Sayfa Bulunamadı
-          </h2>
+          </h1>
           <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">
             Aradığınız sayfa taşınmış veya kaldırılmış olabilir. Ana sayfaya dönebilir veya diğer bölümlerimizi inceleyebilirsiniz.
           </p>

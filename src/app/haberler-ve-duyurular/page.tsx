@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import SubpageHero from "@/components/SubpageHero";
 import { NEWS_ITEMS, NewsItem } from "@/data/bcnData";
-import { Calendar, Clock, Newspaper, ArrowRight, X, User } from "lucide-react";
+import { Calendar, Clock, ArrowRight, X } from "lucide-react";
 
 export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState("Tümü");
@@ -72,7 +72,7 @@ export default function NewsPage() {
 
                 <div className="p-6 space-y-3 flex-1 flex flex-col justify-between">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                    <div className="flex items-center gap-3 text-xs text-slate-500">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3 text-amber-500" />
                         {news.date}
@@ -84,9 +84,9 @@ export default function NewsPage() {
                       </span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-[#17263D] group-hover:text-[#1E3A8A] transition-colors leading-snug">
+                    <h2 className="text-base sm:text-lg font-bold text-[#17263D] group-hover:text-[#1E3A8A] transition-colors leading-snug">
                       {news.title}
-                    </h3>
+                    </h2>
 
                     <p className="text-slate-600 text-xs sm:text-sm line-clamp-3 leading-relaxed">
                       {news.summary}
@@ -125,7 +125,7 @@ export default function NewsPage() {
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#17263D] leading-tight">
                 {activeNewsModal.title}
               </h2>
-              <div className="flex items-center gap-4 text-xs text-slate-400">
+              <div className="flex items-center gap-4 text-xs text-slate-500">
                 <span>{activeNewsModal.date}</span>
                 <span>•</span>
                 <span>{activeNewsModal.author}</span>

@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SubpageHero from "@/components/SubpageHero";
-import { Trophy, Award, Sparkles, CheckCircle2, Star, ArrowRight } from "lucide-react";
 
 export const metadata = {
   title: "Başarılarımız & Olimpiyatlar | BCN Eğitim Kurumları",
@@ -99,10 +98,10 @@ export default function AchievementsPage() {
                     </span>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <span className="text-[11px] font-mono text-amber-300 uppercase block mb-1">
+                    <span className="text-xs font-mono text-amber-300 uppercase block mb-1">
                       {ach.category}
                     </span>
-                    <h3 className="text-xl font-bold">{ach.title}</h3>
+                    <h2 className="text-xl font-bold">{ach.title}</h2>
                   </div>
                 </div>
 

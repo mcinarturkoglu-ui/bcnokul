@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SubpageHero from "@/components/SubpageHero";
 import { INTERNATIONAL_PROGRAMS } from "@/data/bcnData";
-import { Globe, Award, CheckCircle2, ArrowRight, ShieldCheck, BookOpen } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export const metadata = {
   title: "Uluslararası Programlar | BCN Eğitim Kurumları",
@@ -50,7 +50,7 @@ export default function InternationalProgramsPage() {
                     <span className="text-xs font-mono text-amber-300 uppercase block mb-1">
                       {prog.targetAges}
                     </span>
-                    <h3 className="text-xl font-bold">{prog.shortTitle}</h3>
+                    <p className="text-xl font-bold">{prog.shortTitle}</p>
                   </div>
                 </div>
 
@@ -70,7 +70,7 @@ export default function InternationalProgramsPage() {
 
                   {/* Program Details */}
                   <div className="space-y-2.5">
-                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                       Program Yapısı ve Ayrıcalıkları:
                     </div>
                     {prog.details.map((detail, idx) => (
@@ -83,7 +83,7 @@ export default function InternationalProgramsPage() {
 
                   {/* Benefits pills */}
                   <div className="pt-2">
-                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                       Küresel Avantajlar:
                     </div>
                     <div className="flex flex-wrap gap-2">

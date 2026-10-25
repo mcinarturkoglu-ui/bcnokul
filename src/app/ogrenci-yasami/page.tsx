@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SubpageHero from "@/components/SubpageHero";
-import { Trophy, Palette, Activity, Globe, Sparkles, BookOpen, Music, Code2, Users2, ArrowRight } from "lucide-react";
+import { Palette, Activity, Globe, Leaf, BookOpen, Music, Code2, Users2 } from "lucide-react";
 
 export const metadata = {
   title: "Öğrenci Yaşamı & Kulüpler | BCN Eğitim Kurumları",
@@ -16,7 +16,7 @@ const CLUBS = [
   { name: "Görsel Sanatlar & Seramik", desc: "Resim sergileri, heykel, seramik fırını ve yaratıcı tasarım atölyeleri.", icon: Palette },
   { name: "Basketbol, Voleybol & Yüzme", desc: "Lisanslı okul takımları, kondisyon ve turnuva hazırlık kampları.", icon: Activity },
   { name: "Felsefe & Münazara Topluluğu", desc: "Eleştirel düşünme, kanıt temelli tartışma ve kitap inceleme kulübü.", icon: BookOpen },
-  { name: "Ekoloji & Sürdürülebilirlik", desc: "Sıfır atık, kompost üretimi ve okul bahçesinde permakültür tarım.", icon: Sparkles },
+  { name: "Ekoloji & Sürdürülebilirlik", desc: "Sıfır atık, kompost üretimi ve okul bahçesinde permakültür tarım.", icon: Leaf },
   { name: "Sosyal Sorumluluk & Genç Liderler", desc: "Toplumsal fayda projeleri, kardeş okul destekleri ve yardım kampanyaları.", icon: Users2 }
 ];
 

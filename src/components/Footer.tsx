@@ -4,17 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useModal } from "@/context/ModalContext";
-import {
-  MapPin,
-  Phone,
-  Mail,
-  ArrowRight,
-  ShieldCheck,
-  Award,
-  Globe2,
-  ExternalLink,
-  Clock,
-} from "lucide-react";
+import { MapPin, Phone, Mail, ArrowRight, Award, Clock } from "lucide-react";
 import { INSTITUTION_INFO, LEVELS, INTERNATIONAL_PROGRAMS } from "@/data/bcnData";
 
 export default function Footer() {
@@ -30,9 +20,9 @@ export default function Footer() {
               <Award className="w-3.5 h-3.5" />
               <span>Dünya Standartlarında Eğitim</span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               Geleceği Sorgulayan, Bilimle İnşa Eden Nesiller
-            </h3>
+            </h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               BCN Eğitim Kurumları; Çekmeköy-Ümraniye kampüsünde anaokulundan liseye, IB PYP, OSSD Kanada Çift Diploması ve yapay zekâ destekli öğrenme vizyonuyla hizmet vermektedir.
             </p>
@@ -66,7 +56,7 @@ export default function Footer() {
             </div>
             <div>
               <div className="font-semibold text-white">IB PYP Aday Okulu</div>
-              <div className="text-[11px] text-slate-400">Primary Years Programme</div>
+              <div className="text-xs text-slate-400">Primary Years Programme</div>
             </div>
           </div>
 
@@ -76,7 +66,7 @@ export default function Footer() {
             </div>
             <div>
               <div className="font-semibold text-white">OSSD Kanada Diploması</div>
-              <div className="text-[11px] text-slate-400">Ontario Secondary Diploma</div>
+              <div className="text-xs text-slate-400">Ontario Secondary Diploma</div>
             </div>
           </div>
 
@@ -86,7 +76,7 @@ export default function Footer() {
             </div>
             <div>
               <div className="font-semibold text-white">Advanced Placement</div>
-              <div className="text-[11px] text-slate-400">College Board Onaylı</div>
+              <div className="text-xs text-slate-400">College Board Onaylı</div>
             </div>
           </div>
 
@@ -96,7 +86,7 @@ export default function Footer() {
             </div>
             <div>
               <div className="font-semibold text-white">FLL Şampiyonu</div>
-              <div className="text-[11px] text-slate-400">Türkiye & Marmara 1.'si</div>
+              <div className="text-xs text-slate-400">Türkiye & Marmara 1.'si</div>
             </div>
           </div>
         </div>
@@ -106,20 +96,18 @@ export default function Footer() {
           {/* Col 1: Identity & Contact */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1 shadow-sm">
-                <Image
-                  src="/images/bcn/logo-white.png"
-                  alt="BCN Koleji Logo"
-                  width={34}
-                  height={34}
-                  className="object-contain logo-filter-navy"
-                />
-              </div>
+              <Image
+                src="/images/bcn/logo-crest.png"
+                alt="BCN College arması"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain"
+              />
               <div>
-                <span className="font-extrabold text-xl tracking-tight text-white block">
+                <span className="font-brand font-semibold text-xl tracking-[0.06em] text-white block">
                   BCN EĞİTİM KURUMLARI
                 </span>
-                <span className="text-[11px] font-medium text-slate-400 tracking-wider uppercase block">
+                <span className="text-xs font-medium text-slate-400 tracking-wider uppercase block">
                   Çekmeköy & Madenler Kampüsü
                 </span>
               </div>
@@ -132,13 +120,13 @@ export default function Footer() {
             <div className="space-y-2 pt-2 text-xs sm:text-sm text-slate-300">
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-amber-400 shrink-0" />
-                <a href={`tel:${INSTITUTION_INFO.phone.replace(/\s+/g, "")}`} className="hover:text-white font-medium">
+                <a href={`tel:${INSTITUTION_INFO.phone.replace(/\s+/g, "")}`} className="inline-flex items-center min-h-11 hover:text-white font-medium">
                   {INSTITUTION_INFO.phone}
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-amber-400 shrink-0" />
-                <a href={`mailto:${INSTITUTION_INFO.email}`} className="hover:text-white">
+                <a href={`mailto:${INSTITUTION_INFO.email}`} className="inline-flex items-center min-h-11 hover:text-white">
                   {INSTITUTION_INFO.email}
                 </a>
               </div>
@@ -153,7 +141,7 @@ export default function Footer() {
                 href={INSTITUTION_INFO.socials.instagram}
                 target="_blank"
                 rel="noreferrer"
-                className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
+                className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -164,7 +152,7 @@ export default function Footer() {
                 href={INSTITUTION_INFO.socials.facebook}
                 target="_blank"
                 rel="noreferrer"
-                className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
+                className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -175,7 +163,7 @@ export default function Footer() {
                 href={INSTITUTION_INFO.socials.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
+                className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -187,37 +175,37 @@ export default function Footer() {
 
           {/* Col 2: Kademeler */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400">
               Eğitim Kademeleri
-            </h4>
+            </h3>
             <ul className="space-y-2 text-xs text-slate-300">
               <li>
-                <Link href="/kademeler/aurelia-preschool" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/kademeler/aurelia-preschool" className="hover:text-white transition-colors block py-1.5">
                   Aurelia Preschool (3-6 Yaş)
                 </Link>
               </li>
               <li>
-                <Link href="/kademeler/ilkokul" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/kademeler/ilkokul" className="hover:text-white transition-colors block py-1.5">
                   İlkokul (IB PYP Aday Okulu)
                 </Link>
               </li>
               <li>
-                <Link href="/kademeler/ortaokul" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/kademeler/ortaokul" className="hover:text-white transition-colors block py-1.5">
                   Ortaokul & LGS Hazırlık
                 </Link>
               </li>
               <li>
-                <Link href="/kademeler/anadolu-lisesi" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/kademeler/anadolu-lisesi" className="hover:text-white transition-colors block py-1.5">
                   Anadolu Lisesi (Kanada OSSD)
                 </Link>
               </li>
               <li>
-                <Link href="/kademeler/fen-lisesi" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/kademeler/fen-lisesi" className="hover:text-white transition-colors block py-1.5">
                   Fen Lisesi & İleri STEM
                 </Link>
               </li>
               <li className="pt-2">
-                <Link href="/kademeler" className="text-amber-300 hover:underline flex items-center gap-1 font-semibold">
+                <Link href="/kademeler" className="text-amber-300 hover:underline inline-flex items-center gap-1 min-h-11 font-semibold">
                   Tüm Kademeleri Keşfet <ArrowRight className="w-3 h-3" />
                 </Link>
               </li>
@@ -226,37 +214,37 @@ export default function Footer() {
 
           {/* Col 3: Uluslararası Programlar */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400">
               Uluslararası Programlar
-            </h4>
+            </h3>
             <ul className="space-y-2 text-xs text-slate-300">
               <li>
-                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-1.5">
                   IB Primary Years (PYP)
                 </Link>
               </li>
               <li>
-                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-1.5">
                   Kanada Çift Diploma (OSSD)
                 </Link>
               </li>
               <li>
-                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-1.5">
                   Advanced Placement (AP)
                 </Link>
               </li>
               <li>
-                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-1.5">
                   Model United Nations (MUN)
                 </Link>
               </li>
               <li>
-                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-1.5">
                   Erasmus+ Avrupa Projeleri
                 </Link>
               </li>
               <li>
-                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/uluslararasi-programlar" className="hover:text-white transition-colors block py-1.5">
                   ThinkGlobal & Partner Okullar
                 </Link>
               </li>
@@ -265,47 +253,47 @@ export default function Footer() {
 
           {/* Col 4: Kurumsal & Hızlı Erişim */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400">
               Kurumsal & Başarılar
-            </h4>
+            </h3>
             <ul className="space-y-2 text-xs text-slate-300">
               <li>
-                <Link href="/hakkimizda" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/hakkimizda" className="hover:text-white transition-colors block py-1.5">
                   Hakkımızda & Kurucu Vizyonu
                 </Link>
               </li>
               <li>
-                <Link href="/lider-ekibimiz" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/lider-ekibimiz" className="hover:text-white transition-colors block py-1.5">
                   Lider Ekibimiz & Yönetim
                 </Link>
               </li>
               <li>
-                <Link href="/misyon-ve-vizyon" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/misyon-ve-vizyon" className="hover:text-white transition-colors block py-1.5">
                   Misyon ve Vizyon
                 </Link>
               </li>
               <li>
-                <Link href="/egitim-modelimiz" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/egitim-modelimiz" className="hover:text-white transition-colors block py-1.5">
                   Eğitim Modelimiz & RULER
                 </Link>
               </li>
               <li>
-                <Link href="/kampusumuz" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/kampusumuz" className="hover:text-white transition-colors block py-1.5">
                   Fiziki Olanaklar & Kampüs
                 </Link>
               </li>
               <li>
-                <Link href="/basarilarimiz" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/basarilarimiz" className="hover:text-white transition-colors block py-1.5">
                   Dünya Şampiyonlukları
                 </Link>
               </li>
               <li>
-                <Link href="/kayit-ve-kabul" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/kayit-ve-kabul" className="hover:text-white transition-colors block py-1.5">
                   Kayıt ve Kabul Rehberi
                 </Link>
               </li>
               <li>
-                <Link href="/haberler-ve-duyurular" className="hover:text-white transition-colors block py-0.5">
+                <Link href="/haberler-ve-duyurular" className="hover:text-white transition-colors block py-1.5">
                   Basında Biz & Haberler
                 </Link>
               </li>
@@ -316,18 +304,18 @@ export default function Footer() {
         {/* Bottom Legal & Copyright */}
         <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div>
-            © 2026 Tüm Hakları Saklıdır • BCN Eğitim Kurumları | Modern International School Redesign
+            © 2026 Tüm Hakları Saklıdır • BCN Eğitim Kurumları
           </div>
           <div className="flex flex-wrap items-center gap-4 text-xs">
-            <Link href="/kayit-ve-kabul#kvkk" className="hover:text-slate-200 transition-colors">
+            <Link href="/kayit-ve-kabul#kvkk" className="inline-flex items-center min-h-11 hover:text-slate-200 transition-colors">
               Aydınlatma Metni (KVKK)
             </Link>
             <span>•</span>
-            <Link href="/kayit-ve-kabul#kvkk" className="hover:text-slate-200 transition-colors">
+            <Link href="/kayit-ve-kabul#kvkk" className="inline-flex items-center min-h-11 hover:text-slate-200 transition-colors">
               Açık Rıza Metni
             </Link>
             <span>•</span>
-            <Link href="/kayit-ve-kabul#kvkk" className="hover:text-slate-200 transition-colors">
+            <Link href="/kayit-ve-kabul#kvkk" className="inline-flex items-center min-h-11 hover:text-slate-200 transition-colors">
               Çerez Politikası
             </Link>
           </div>
