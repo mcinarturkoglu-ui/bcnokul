@@ -1,16 +1,49 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { FACILITIES } from "@/data/bcnData";
 
+// Home page shows only spaces we have a real photo of; the rest wait for the school's photos
+const byId = (id: string) => FACILITIES.find((f) => f.id === id)!;
+const FEATURED = [
+  { ...byId("campus-building"), image: "/images/bcn/campus-lobby.jpg" },
+  byId("stem-labs"),
+  { ...byId("science-lab"), image: "/images/bcn/campus-facade-1.jpg" },
+  {
+    id: "preschool-garden",
+    name: "Anaokulu Oyun Bahçesi",
+    category: "Erken Çocukluk",
+    description: "Aurelia Preschool öğrencilerine ayrılmış, kaydıraklı ve yumuşak zeminli açık oyun alanı.",
+    capacity: "",
+    image: "/images/bcn/campus-facade-2.jpg",
+  },
+];
+
+const HOVER_INTENT_MS = 80;
+
 export default function CampusSection() {
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const featuredFacilities = FACILITIES.slice(0, 5);
-  const current = featuredFacilities[selectedIdx] || featuredFacilities[0];
+  const current = FEATURED[selectedIdx];
+
+  // Same rule as the levels panels: a passing cursor does not switch the photo, click/focus does at once
+  const intentTimer = useRef<number | null>(null);
+  const cancelIntent = () => {
+    if (intentTimer.current !== null) window.clearTimeout(intentTimer.current);
+    intentTimer.current = null;
+  };
+  const selectNow = (idx: number) => {
+    cancelIntent();
+    setSelectedIdx(idx);
+  };
+  const selectWithIntent = (idx: number) => {
+    cancelIntent();
+    intentTimer.current = window.setTimeout(() => setSelectedIdx(idx), HOVER_INTENT_MS);
+  };
+  useEffect(() => cancelIntent, []);
 
   return (
     <section className="w-full flex flex-col bg-white text-[#17263D] px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24 overflow-hidden">
@@ -35,7 +68,7 @@ export default function CampusSection() {
       </div>
 
       {/* Main Interactive Stage */}
-      <div className="w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 lg:h-[540px] grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-stretch">
+      <div className="w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 lg:h-[440px] grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-stretch">
         {/* Left: Dynamic Main Stage Visual Display */}
         <div className="lg:col-span-7 relative h-[280px] sm:h-[380px] lg:h-full rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 bg-slate-950 group">
           <AnimatePresence mode="wait">
@@ -52,8 +85,7 @@ export default function CampusSection() {
                 alt={current.name}
                 fill
                 sizes="(max-width: 1024px) 100vw, 60vw"
-                className="object-cover object-center group-hover:scale-104 transition-transform duration-700"
-                priority
+                className="object-cover object-center"
               />
             </motion.div>
           </AnimatePresence>
@@ -61,9 +93,8 @@ export default function CampusSection() {
 
           {/* Floating Campus Badge */}
           <div className="absolute top-4 left-4 z-10">
-            <span className="px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#17263D] text-xs font-bold shadow-md inline-flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" aria-hidden="true" />
-              <span>{current.category}</span>
+            <span className="px-3 py-1 rounded-full bg-white text-[#0B1524] text-xs font-semibold">
+              {current.category}
             </span>
           </div>
 
@@ -72,59 +103,44 @@ export default function CampusSection() {
             <h3 className="text-xl sm:text-2xl font-bold text-white">
               {current.name}
             </h3>
-            <p className="text-xs sm:text-sm text-slate-200 line-clamp-2 max-w-lg leading-relaxed">
+            <p className="text-sm text-slate-200 max-w-lg leading-relaxed">
               {current.description}
             </p>
           </div>
         </div>
 
-        {/* Right: Interactive Facility Selector Tabs */}
-        <div className="lg:col-span-5 flex flex-col justify-center gap-3">
-          {featuredFacilities.map((fac, idx) => {
+        {/* Right: facility selector */}
+        <div className="lg:col-span-5 flex flex-col justify-center gap-2">
+          {FEATURED.map((fac, idx) => {
             const isSelected = selectedIdx === idx;
             return (
               <button
                 key={fac.id}
                 type="button"
-                onMouseEnter={() => setSelectedIdx(idx)}
-                onClick={() => setSelectedIdx(idx)}
-                className={`p-3 sm:p-3.5 rounded-2xl flex items-center justify-between text-left transition-all duration-300 border cursor-pointer ${
+                aria-pressed={isSelected}
+                onMouseEnter={() => selectWithIntent(idx)}
+                onMouseLeave={cancelIntent}
+                onClick={() => selectNow(idx)}
+                onFocus={() => selectNow(idx)}
+                className={`min-h-14 px-4 py-3 rounded-2xl flex items-center justify-between gap-3 text-left border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A8A] ${
                   isSelected
-                    ? "bg-[#17263D] text-white border-[#17263D] shadow-lg scale-101"
-                    : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/80"
+                    ? "bg-[#0B1524] text-white border-[#0B1524]"
+                    : "bg-white hover:bg-slate-50 text-[#17263D] border-slate-200"
                 }`}
               >
-                <div className="space-y-0.5 pr-2">
-                  <div className="text-xs sm:text-sm font-bold flex items-center gap-2">
-                    <span>{fac.name}</span>
-                  </div>
-                  <div
-                    className={`text-xs line-clamp-1 ${
-                      isSelected ? "text-slate-300" : "text-slate-500"
-                    }`}
-                  >
-                    {fac.description}
-                  </div>
-                </div>
-
-                <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${
-                    isSelected
-                      ? "bg-amber-400 text-slate-900"
-                      : "bg-white text-slate-600 border border-slate-200"
-                  }`}
-                >
-                  {fac.capacity}
-                </span>
+                <span className="text-sm sm:text-base font-semibold">{fac.name}</span>
+                {fac.capacity && (
+                  <span className={`text-xs font-medium shrink-0 ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
+                    {fac.capacity}
+                  </span>
+                )}
               </button>
             );
           })}
+          <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+            Çekmeköy Metro İstasyonu&apos;na yürüme mesafesinde, çift hostesli güvenli servis filosu.
+          </p>
         </div>
-      </div>
-
-      {/* Grounding Bottom Line */}
-      <div className="shrink-0 text-center text-xs text-slate-500 py-1">
-        Çekmeköy Metro İstasyonu&apos;na yürüme mesafesinde, çift hostesli güvenli servis filosu
       </div>
     </section>
   );

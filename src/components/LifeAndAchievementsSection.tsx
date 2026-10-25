@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 const THREE_ACHIEVEMENTS = [
@@ -32,7 +31,7 @@ const THREE_ACHIEVEMENTS = [
 
 export default function LifeAndAchievementsSection() {
   return (
-    <section className="w-full flex flex-col bg-slate-900 text-white px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24 overflow-hidden">
+    <section className="w-full flex flex-col bg-[#0B1524] text-white px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24 overflow-hidden">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 shrink-0 max-w-7xl 2xl:max-w-[1520px] mx-auto w-full">
         <div>
@@ -46,7 +45,7 @@ export default function LifeAndAchievementsSection() {
 
         <Link
           href="/basarilarimiz"
-          className="inline-flex items-center min-h-11 gap-2 text-xs sm:text-sm font-bold text-amber-300 hover:text-white transition-colors group cursor-pointer"
+          className="inline-flex items-center min-h-11 gap-2 text-xs sm:text-sm font-bold text-white hover:text-slate-300 transition-colors group cursor-pointer"
         >
           <span>Tüm Başarı Arşivini Görün</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -55,58 +54,37 @@ export default function LifeAndAchievementsSection() {
 
       {/* 3 Prominent Achievement Cards Stage */}
       <div className="flex-1 min-h-0 w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8 items-stretch">
-        {THREE_ACHIEVEMENTS.map((ach, idx) => (
-          <motion.div
+        {THREE_ACHIEVEMENTS.map((ach) => (
+          <Link
             key={ach.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: idx * 0.1 }}
+            href="/basarilarimiz"
+            className="group flex flex-col h-full rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] hover:border-white/25 hover:bg-white/[0.07] transition-colors p-4 sm:p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
           >
-            <Link
-              href="/basarilarimiz"
-              className="group flex flex-col justify-between h-full bg-white/[0.05] hover:bg-white/[0.1] rounded-3xl overflow-hidden border border-white/10 hover:border-[#C59B27]/60 transition-all duration-300 p-4 sm:p-5 space-y-3"
-            >
-              {/* Photo Canvas */}
-              <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-slate-950 shrink-0">
-                <Image
-                  src={ach.image}
-                  alt={ach.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-106 transition-transform duration-700"
-                />
-                <div className="absolute top-2.5 left-2.5 z-10">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#C59B27] text-slate-950 text-xs font-bold shadow-md">
-                    {ach.category}
-                  </span>
-                </div>
+            <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-slate-950 shrink-0">
+              <Image
+                src={ach.image}
+                alt={ach.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover group-hover:scale-103 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+              />
+              <div className="absolute top-2.5 left-2.5 z-10">
+                <span className="px-2.5 py-0.5 rounded-full bg-white text-[#0B1524] text-xs font-semibold">
+                  {ach.category}
+                </span>
               </div>
+            </div>
 
-              {/* Text Info */}
-              <div className="flex-1 flex flex-col justify-between space-y-1.5 text-white">
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-amber-300 transition-colors leading-snug">
-                    {ach.title}
-                  </h3>
-                  <p className="mt-1 text-xs sm:text-sm text-slate-300 leading-relaxed line-clamp-3">
-                    {ach.description}
-                  </p>
-                </div>
-
-                <div className="pt-2 inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 group-hover:text-white transition-colors">
-                  <span>Detayları İncele</span>
-                </div>
-              </div>
-            </Link>
-          </motion.div>
+            <h3 className="mt-4 text-lg font-bold text-white leading-snug">{ach.title}</h3>
+            <p className="mt-2 text-sm text-slate-300 leading-relaxed">{ach.description}</p>
+            <span className="mt-auto pt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white">
+              Detayları İncele
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+            </span>
+          </Link>
         ))}
       </div>
 
-      {/* Grounding Bottom Line */}
-      <div className="shrink-0 text-center text-xs text-slate-400 py-1">
-        Bilim, robotik, sanat ve diplomasi alanlarında 23+ uluslararası ve ulusal madalya
-      </div>
     </section>
   );
 }

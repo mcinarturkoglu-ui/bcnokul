@@ -398,3 +398,12 @@
     transition: none !important;
   }
 }
+
+/* transitions.dev — modal open (06). The admission dialog scales up from 0.96 over a fading scrim. */
+@keyframes t-modal-scrim-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes t-modal-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+.t-modal-scrim { animation: t-modal-scrim-in 250ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.t-modal { animation: t-modal-in 250ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .t-modal-scrim, .t-modal { animation: none; }
+}

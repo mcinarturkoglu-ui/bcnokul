@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 const THREE_PILLARS = [
@@ -12,14 +11,16 @@ const THREE_PILLARS = [
     title: "Zihinsel Disiplin & Rasyonel Akıl",
     description:
       "Ezber kalıpları yerine matematiksel muhakeme, kavramsal sorgulama ve analitik düşünce omurgası inşa ediyoruz.",
-    image: "/images/bcn/classroom-interactive.jpg",
+    image: "/images/bcn/fll-robotics-team.jpg",
+    imageAlt: "Öğrenciler FIRST LEGO League turnuvasında robot düzeneği üzerinde çalışıyor",
   },
   {
     number: "02",
     title: "Çift Dilli Yaşayan Ekosistem",
     description:
       "Erken yaştan itibaren anadil edinimine dayalı daldırma (immersion) modeliyle İngilizce ve Almanca yetkinliği kazandırıyoruz.",
-    image: "/images/bcn/conference-hall.jpg",
+    image: "/images/bcn/reading-festival.jpg",
+    imageAlt: "Okuma Şenliği sahnesi",
   },
   {
     number: "03",
@@ -27,6 +28,7 @@ const THREE_PILLARS = [
     description:
       "Dünya şampiyonlukları kazandıran araştırma kültürü, robotik laboratuvarları ve yapay zekâ okuryazarlığı sunuyoruz.",
     image: "/images/bcn/stem-lab.jpg",
+    imageAlt: "Fen laboratuvarında deney düzeneği",
   },
 ];
 
@@ -53,55 +55,23 @@ export default function ApproachSection() {
         </Link>
       </div>
 
-      {/* 3 Pillars Grid Stage */}
-      <div className="flex-1 min-h-0 w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8 items-stretch">
-        {THREE_PILLARS.map((pillar, idx) => (
-          <motion.div
-            key={pillar.number}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: idx * 0.1 }}
-            className="flex flex-col justify-between rounded-3xl bg-slate-50 border border-slate-200/80 p-5 group hover:shadow-xl hover:border-[#1E3A8A]/40 transition-all duration-300"
-          >
-            {/* Visual Canvas */}
-            <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden shadow-sm bg-slate-900 shrink-0">
+      {/* 3 Pillars: quiet content blocks, not clickable cards */}
+      <div className="w-full max-w-7xl 2xl:max-w-[1520px] mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+        {THREE_PILLARS.map((pillar) => (
+          <article key={pillar.number} className="flex flex-col">
+            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-slate-200">
               <Image
                 src={pillar.image}
-                alt={pillar.title}
+                alt={pillar.imageAlt}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-cover group-hover:scale-106 transition-transform duration-700"
+                className="object-cover"
               />
             </div>
-
-            {/* Content Details */}
-            <div className="space-y-2 pt-3 flex-1 flex flex-col justify-between">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-[#17263D] group-hover:text-[#1E3A8A] transition-colors leading-snug">
-                  {pillar.title}
-                </h3>
-                <p className="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3">
-                  {pillar.description}
-                </p>
-              </div>
-
-              <div className="pt-2">
-                <Link
-                  href="/egitim-modelimiz"
-                  className="inline-flex items-center min-h-11 gap-1.5 text-xs font-bold text-[#1E3A8A] group-hover:text-[#17263D] transition-colors"
-                >
-                  <span>Metodolojiyi İncele</span>
-                </Link>
-              </div>
-            </div>
-          </motion.div>
+            <h3 className="mt-5 text-lg font-bold text-[#17263D] leading-snug">{pillar.title}</h3>
+            <p className="mt-2 text-sm sm:text-base text-slate-600 leading-relaxed">{pillar.description}</p>
+          </article>
         ))}
-      </div>
-
-      {/* Grounding Bottom Line */}
-      <div className="shrink-0 text-center text-xs text-slate-500 py-1">
-        Zihinsel disiplin, erken çocukluktan lise mezuniyetine kadar her kademede uygulanır
       </div>
     </section>
   );
