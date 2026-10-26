@@ -29,48 +29,48 @@ export default function SubpageHero({
       <div className="absolute inset-0 z-0">
         <Image
           src={bgImage}
-          alt={title}
+          alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center opacity-30"
+          className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1524] via-[#0B1524]/80 to-black/40" />
+        {/* Same single navy scrim as the home hero, deepening toward the page below */}
+        <div className="absolute inset-0 bg-[#0B1524]/75" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0B1524] to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl space-y-4">
           {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-xs text-slate-400 mb-2">
+          <nav aria-label="Konum" className="flex flex-wrap items-center gap-2 text-sm text-slate-300 mb-2">
             <Link href="/" className="inline-block py-3 -my-3 hover:text-white transition-colors">
               Ana Sayfa
             </Link>
             {breadcrumbs.map((crumb, idx) => (
               <React.Fragment key={idx}>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
                 {crumb.href ? (
                   <Link href={crumb.href} className="inline-block py-3 -my-3 hover:text-white transition-colors">
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className="text-amber-400 font-medium">{crumb.label}</span>
+                  <span aria-current="page" className="text-white font-medium">{crumb.label}</span>
                 )}
               </React.Fragment>
             ))}
           </nav>
 
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-amber-300 font-semibold tracking-wider uppercase">
-            {badge}
-          </div>
+          {/* Eyebrow, same as the home page section headings */}
+          <p className="text-sm font-semibold text-[#C59B27]">{badge}</p>
 
           {/* Title */}
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight text-balance">
             {title}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-lg text-slate-300 leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-slate-200 leading-relaxed font-normal max-w-2xl">
             {subtitle}
           </p>
         </div>

@@ -2,29 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useModal } from "@/context/ModalContext";
-import { X, CheckCircle2, Calendar, Phone, Mail, User, School, ArrowRight, ChevronDown } from "lucide-react";
+import { X, CheckCircle2, Calendar, Phone, Mail, User, School, ArrowRight } from "lucide-react";
+import { fieldClass, selectClass, labelClass, fieldIconClass, checkboxClass, Optional, SelectChevron } from "@/components/form/fields";
 import LeadFormAlert from "@/components/LeadFormAlert";
 import { whatsappHref } from "@/lib/contact";
 import { isLeadFormConfigured, submitLead, type LeadFormStatus } from "@/lib/submitLead";
-
-const fieldClass =
-  "w-full h-12 px-3.5 text-[15px] text-[#17263D] bg-white border border-slate-300 rounded-xl placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-transparent transition-shadow";
-const selectClass = `${fieldClass} appearance-none pr-10 cursor-pointer`;
-const labelClass = "block text-sm font-medium text-slate-800 mb-1.5";
-const fieldIconClass = "w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none";
-
-function Optional() {
-  return <span className="font-normal text-slate-500"> (isteğe bağlı)</span>;
-}
-
-function SelectChevron() {
-  return (
-    <ChevronDown
-      className="w-4 h-4 text-slate-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-      aria-hidden="true"
-    />
-  );
-}
 
 export default function AdmissionModal() {
   const { isAdmissionOpen, closeAdmission, selectedLevel } = useModal();
@@ -307,7 +289,7 @@ export default function AdmissionModal() {
                     required
                     checked={formData.kvkkConsent}
                     onChange={(e) => setFormData({ ...formData, kvkkConsent: e.target.checked })}
-                    className="mt-0.5 size-5 shrink-0 rounded border-slate-400 text-[#1E3A8A] focus:ring-[#1E3A8A]"
+                    className={checkboxClass}
                   />
                   <span>
                     Paylaştığım bilgilerin kayıt ve kabul süreci kapsamında{" "}
@@ -323,7 +305,7 @@ export default function AdmissionModal() {
                     name="notificationConsent"
                     checked={formData.notificationConsent}
                     onChange={(e) => setFormData({ ...formData, notificationConsent: e.target.checked })}
-                    className="mt-0.5 size-5 shrink-0 rounded border-slate-400 text-[#1E3A8A] focus:ring-[#1E3A8A]"
+                    className={checkboxClass}
                   />
                   <span>BCN Eğitim Kurumları&apos;nın beni bilgilendirmesine onay veriyorum.</span>
                 </label>

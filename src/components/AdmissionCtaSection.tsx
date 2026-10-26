@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { ArrowRight, Phone, Calendar } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
 import { useModal } from "@/context/ModalContext";
 import { INSTITUTION_INFO } from "@/data/bcnData";
+import { PHONE_HREF } from "@/lib/contact";
 
 export default function AdmissionCtaSection() {
   const { openAdmission } = useModal();
@@ -22,7 +23,7 @@ export default function AdmissionCtaSection() {
         </h2>
 
         {/* Subtitle */}
-        <p className="mt-4 text-xs sm:text-base text-slate-300 font-normal leading-relaxed max-w-xl">
+        <p className="mt-4 text-base text-slate-300 font-normal leading-relaxed max-w-xl">
           Kontenjanlarımız sınırlıdır. Çekmeköy kampüsümüzü ziyaret ederek eğitim vizyonumuzu ve akademik imkânlarımızı yerinde keşfedin.
         </p>
 
@@ -31,18 +32,17 @@ export default function AdmissionCtaSection() {
           <button
             type="button"
             onClick={() => openAdmission()}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-white text-[#17263D] font-bold text-xs sm:text-sm hover:bg-slate-100 hover:shadow-2xl transition-all duration-300 transform active:scale-95 cursor-pointer group"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-12 px-8 rounded-xl bg-white text-[#0B1524] font-semibold text-[15px] hover:bg-slate-100 transition-colors cursor-pointer group focus-ring-light"
           >
-            <Calendar className="w-4 h-4 text-[#C59B27]" />
             <span>Kampüs Ziyaret Randevusu Al</span>
-            <ArrowRight className="w-4 h-4 text-[#17263D] group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
           </button>
 
           <a
-            href={`tel:${INSTITUTION_INFO.phone.replace(/\s+/g, "")}`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-xs sm:text-sm backdrop-blur-md border border-white/20 transition-all duration-300 cursor-pointer"
+            href={PHONE_HREF}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl text-white font-semibold text-[15px] border border-white/30 hover:bg-white/10 hover:border-white/60 transition-colors cursor-pointer focus-ring-light"
           >
-            <Phone className="w-4 h-4 text-emerald-400" />
+            <Phone className="w-4 h-4" aria-hidden="true" />
             <span>{INSTITUTION_INFO.phone}</span>
           </a>
         </div>
